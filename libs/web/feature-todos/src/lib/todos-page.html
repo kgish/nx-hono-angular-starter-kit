@@ -1,0 +1,52 @@
+<section class="todos">
+  <header>
+    <h1>Todos</h1>
+    <p class="summary">
+      {{ store.remaining() }} of {{ store.todos().length }} remaining
+    </p>
+  </header>
+
+  <form (submit)="submit($event)" novalidate>
+    <input
+      type="text"
+      name="title"
+      placeholder="What needs doing?"
+      aria-label="New todo title"
+      [value]="title()"
+      (input)="title.set($any($event.target).value)"
+      (blur)="touched.set(true)"
+      [attr.aria-invalid]="!!titleError()"
+    />
+    <button type="submit" [disabled]="store.loading()">Add</button>
+  </form>
+  @if (titleError(); as message) {
+  <p class="field-error" role="alert">{{ message }}</p>
+  } @if (store.error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <ul>
+    @for (todo of store.todos(); track todo.id) {
+    <li [class.completed]="todo.completed">
+      <label>
+        <input
+          type="checkbox"
+          [checked]="todo.completed"
+          (change)="store.toggle(todo)"
+        />
+        <span>{{ todo.title }}</span>
+      </label>
+      <button
+        type="button"
+        class="remove"
+        (click)="store.remove(todo.id)"
+        [attr.aria-label]="'Delete ' + todo.title"
+      >
+        ✕
+      </button>
+    </li>
+    } @empty { @if (!store.loading()) {
+    <li class="empty">Nothing to do yet.</li>
+    } }
+  </ul>
+</section>

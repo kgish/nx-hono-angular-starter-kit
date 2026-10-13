@@ -1,0 +1,54 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/api/src",
+  "tags": ["scope:api", "type:app"],
+  "targets": {
+    "serve": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun --watch apps/api/src/main.ts"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/apps/api"],
+      "options": {
+        "commands": [
+          "bun build apps/api/src/main.ts apps/api/src/migrate.ts --target=bun --minify --sourcemap=linked --outdir=dist/apps/api",
+          "rm -rf dist/apps/api/migrations && cp -r libs/api/db/migrations dist/apps/api/migrations"
+        ],
+        "parallel": false
+      }
+    },
+    "start": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "bun dist/apps/api/main.js",
+        "env": { "MIGRATIONS_DIR": "dist/apps/api/migrations" }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "command": "bun test",
+        "cwd": "apps/api"
+      }
+    },
+    "typecheck": {
+      "options": { "command": "tsc -p apps/api/tsconfig.spec.json --noEmit" }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": { "command": "bun apps/api/src/migrate.ts" }
+    }
+  }
+}

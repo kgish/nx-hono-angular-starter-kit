@@ -1,0 +1,14 @@
+{
+  "name": "shared-util",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/util/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "typecheck": {
+      "options": {
+        "command": "tsc -p libs/shared/util/tsconfig.spec.json --noEmit"
+      }
+    }
+  }
+}

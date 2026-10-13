@@ -1,0 +1,29 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@fullstack/schemas": ["./libs/shared/schemas/src/index.ts"],
+      "@fullstack/util": ["./libs/shared/util/src/index.ts"],
+      "@fullstack/api/db": ["./libs/api/db/src/index.ts"],
+      "@fullstack/web/data-access": ["./libs/web/data-access/src/index.ts"],
+      "@fullstack/web/feature-todos": ["./libs/web/feature-todos/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
