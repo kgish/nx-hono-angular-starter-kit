@@ -1,6 +1,6 @@
 # Fullstack Nx monorepo
 
-Angular frontend and a Hono API on Bun, sharing Zod schemas through an Nx workspace,
+Angular frontend and Hono API on Bun, sharing Zod schemas through a Nx workspace,
 backed by PostgreSQL and deployed as Docker containers with GitHub Actions.
 
 | Layer    | Stack                                                               |
@@ -50,7 +50,7 @@ scope plus `scope:shared`, and shared libraries cannot import anything framework
 ```sh
 npm ci
 cp .env.example .env          # Bun loads .env automatically
-npm run db:up                 # PostgreSQL on localhost:5432
+npm run db:up                 # PostgresSQL on localhost:5432
 npm run dev                   # API on :3000 (migrates on start), web on :4200
 ```
 
@@ -87,7 +87,7 @@ docker compose up --build     # db + api + web on http://localhost:8080
 
 ## CI/CD
 
-- **`ci.yml`** (pull requests, and called by deploy): `nx format:check`, then
+- **`ci.yml`** (pull requests, and called by deployment): `nx format:check`, then
   `nx affected -t lint test typecheck build`, plus a job that runs the bundled API against a
   PostgreSQL service container and smoke-tests the CRUD endpoints.
 - **`deploy.yml`** (push to `main` or manual): runs CI, builds and pushes
@@ -97,9 +97,9 @@ docker compose up --build     # db + api + web on http://localhost:8080
 
 ### Server setup (one time)
 
-1. Install Docker Engine with the Compose plugin on the server and create a deploy user that
+1. Install Docker Engine with the Compose plugin on the server and create a deployment user that
    can run `docker`.
-2. Create the deploy directory (default `/opt/fullstack`) and copy `deploy/.env.example`
+2. Create the deployment directory (default `/opt/fullstack`) and copy `deploy/.env.example`
    to `.env` there with a real `POSTGRES_PASSWORD`.
 3. In the GitHub repository settings, add an environment named `production` and configure:
 
