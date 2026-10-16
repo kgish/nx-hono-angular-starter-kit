@@ -58,3 +58,6 @@ __screenshots__/
 .env
 .env.*
 !.env.example
+
+# local docker compose overrides
+compose.override.yaml

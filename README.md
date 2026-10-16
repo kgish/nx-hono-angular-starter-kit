@@ -47,14 +47,51 @@ scope plus `scope:shared`, and shared libraries cannot import anything framework
 
 ## Getting started
 
+First time only:
+
 ```sh
 npm ci
 cp .env.example .env          # Bun loads .env automatically
-npm run db:up                 # PostgresSQL on localhost:5432
+```
+
+Then start everything the app needs, from the repository root:
+
+```sh
+npm run db:up                 # PostgreSQL in Docker on localhost:5432
 npm run dev                   # API on :3000 (migrates on start), web on :4200
 ```
 
-The Angular dev server proxies `/api` to `localhost:3000` (`apps/web/proxy.conf.json`).
+Open http://localhost:4200. The Angular dev server proxies `/api` to `localhost:3000`
+(`apps/web/proxy.conf.json`), and both servers reload when files change.
+
+To stop, press Ctrl+C in the `npm run dev` terminal (stops the API and web servers) and run
+`docker compose stop db` (the data stays in the `db-data` volume).
+
+To run the whole stack in containers instead, see [Docker](#docker).
+
+### Troubleshooting
+
+**Port 5432 is already in use**, for example by another project's PostgreSQL container: stop
+that container, or publish this project's database on another port. Create
+`compose.override.yaml` (gitignored and loaded automatically by Docker Compose; `!override`
+needs Compose 2.24+):
+
+```yaml
+services:
+  db:
+    ports: !override
+      - '5433:5432'
+```
+
+and point the API at it in `.env`:
+
+```sh
+DATABASE_URL=postgres://app:app@localhost:5433/app
+```
+
+**The web server fails with `Port 3000 is already in use`**: `.env` sets `PORT`. Nx loads
+`.env` into every task and the Angular dev server prefers `PORT` over `--port`, so keep `PORT`
+out of `.env`. The API defaults to 3000.
 
 ### Everyday commands
 
@@ -78,7 +115,12 @@ npx nx graph                  # dependency graph
 
 ```sh
 docker compose up --build     # db + api + web on http://localhost:8080
+docker compose down           # stop; add -v to also delete the database volume
 ```
+
+This is closer to production but doesn't reload on code changes, so use `npm run dev` for
+day-to-day work. The database still publishes port 5432 (see
+[Troubleshooting](#troubleshooting)).
 
 - `apps/api/Dockerfile`: installs production deps with npm, bundles `main.ts` and
   `migrate.ts` with `bun build`, runs on `oven/bun:1.4-alpine` as the `bun` user.
