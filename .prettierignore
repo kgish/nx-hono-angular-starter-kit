@@ -7,3 +7,4 @@
 .angular
 # Vendored agent skills, managed by `npx skills`
 /.claude/skills
+/.agents/skills
