@@ -42,6 +42,11 @@ const EnvSchema = z
     SMTP_URL: z.url().optional(),
     /** Sender of the emails, e.g. `Todos <no-reply@example.com>`. */
     MAIL_FROM: z.string().min(1).optional(),
+    LOG_LEVEL: z
+      .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'])
+      .default('info'),
+    /** Readable coloured log lines instead of JSON. */
+    LOG_PRETTY: z.enum(['true', 'false']).optional(),
   })
   .transform((env, ctx) => {
     const production = env.NODE_ENV === 'production';
@@ -65,6 +70,7 @@ const EnvSchema = z
       SEED_DEMO_USER: env.SEED_DEMO_USER
         ? env.SEED_DEMO_USER === 'true'
         : !production,
+      LOG_PRETTY: env.LOG_PRETTY ? env.LOG_PRETTY === 'true' : !production,
     };
   });
 
