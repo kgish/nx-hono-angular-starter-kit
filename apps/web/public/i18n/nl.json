@@ -85,7 +85,7 @@
     }
   },
   "footer": {
-    "copyright": "© {{year}} The Music Hub",
+    "copyright": "© {{year}} Nx Hono Angular Starter Kit",
     "version": "Versie {{version}}"
   }
 }

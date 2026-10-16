@@ -9,6 +9,7 @@
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
+      "inputs": ["production", "^production", "{workspaceRoot}/package.json"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/web",
