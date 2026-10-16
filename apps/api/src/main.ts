@@ -30,6 +30,7 @@ const auth = createAuth({
   mailer: createSmtpMailer(env.SMTP_URL, env.MAIL_FROM),
   baseURL: env.BETTER_AUTH_URL,
   trustedOrigins: env.CORS_ORIGIN?.split(','),
+  cookiePrefix: env.BETTER_AUTH_COOKIE_PREFIX,
 });
 
 if (env.SEED_DEMO_USER && (await seedDemoUser(auth))) {

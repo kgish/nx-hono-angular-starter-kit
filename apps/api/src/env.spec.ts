@@ -10,6 +10,18 @@ describe('loadEnv', () => {
     expect(env.SEED_DEMO_USER).toBe(true);
   });
 
+  it('accepts a cookie prefix that is a valid cookie name', () => {
+    expect(
+      loadEnv({ BETTER_AUTH_COOKIE_PREFIX: 'todos-docker' })
+        .BETTER_AUTH_COOKIE_PREFIX,
+    ).toBe('todos-docker');
+    const log = spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(() =>
+      loadEnv({ BETTER_AUTH_COOKIE_PREFIX: 'todos docker' }),
+    ).toThrow();
+    log.mockRestore();
+  });
+
   it('sends email through local Mailpit outside production', () => {
     expect(loadEnv({}).SMTP_URL).toBe('smtp://localhost:1025');
   });

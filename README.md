@@ -72,13 +72,14 @@ only see and change their own, and someone else's todo answers `404`.
 - The better-auth endpoints answer errors with better-auth's own `{ code, message }` body
   (`AuthErrorSchema`), not `ApiError`.
 
-| Variable             | Default                                             | Purpose                                                              |
-| -------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
-| `BETTER_AUTH_SECRET` | development secret; required in prod                | Signs session cookies; at least 32 characters                        |
-| `BETTER_AUTH_URL`    | inferred from each request                          | Public URL of the web app; better-auth only accepts sign-ins from it |
-| `SEED_DEMO_USER`     | `true`, or `false` when `NODE_ENV=production`       | Creates the demo user on start                                       |
-| `SMTP_URL`           | `smtp://localhost:1025` (Mailpit); required in prod | SMTP server for emails, e.g. `smtps://user:password@host:465`        |
-| `MAIL_FROM`          | `Todos <no-reply@localhost>`; required in prod      | Sender of the emails                                                 |
+| Variable                    | Default                                             | Purpose                                                              |
+| --------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`        | development secret; required in prod                | Signs session cookies; at least 32 characters                        |
+| `BETTER_AUTH_URL`           | inferred from each request                          | Public URL of the web app; better-auth only accepts sign-ins from it |
+| `BETTER_AUTH_COOKIE_PREFIX` | `better-auth`                                       | Session cookie name prefix; `compose.yaml` uses `todos-docker`       |
+| `SEED_DEMO_USER`            | `true`, or `false` when `NODE_ENV=production`       | Creates the demo user on start                                       |
+| `SMTP_URL`                  | `smtp://localhost:1025` (Mailpit); required in prod | SMTP server for emails, e.g. `smtps://user:password@host:465`        |
+| `MAIL_FROM`                 | `Todos <no-reply@localhost>`; required in prod      | Sender of the emails                                                 |
 
 ### Translations
 
@@ -169,7 +170,8 @@ docker compose down           # stop; add -v to also delete the database volume
 
 This is closer to production but doesn't reload on code changes, so use `npm run dev` for
 day-to-day work. `compose.yaml` creates the demo user and sets `BETTER_AUTH_URL` to
-`http://localhost:8080`, so open that exact address (not `127.0.0.1`) to sign in. Emails go to
+`http://localhost:8080`, so open that exact address (not `127.0.0.1`) to sign in. It uses its own
+session cookie (`BETTER_AUTH_COOKIE_PREFIX`), so you can be signed in on :8080 and :4200 at once. Emails go to
 the Mailpit container, at http://localhost:8025. The database still publishes port 5432 (see
 [Troubleshooting](#troubleshooting)).
 

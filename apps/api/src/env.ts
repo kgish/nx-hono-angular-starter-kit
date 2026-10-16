@@ -28,6 +28,15 @@ const EnvSchema = z
     BETTER_AUTH_SECRET: z.string().min(32).optional(),
     /** Public URL of the web app; inferred from each request when unset. */
     BETTER_AUTH_URL: z.url().optional(),
+    /**
+     * Names the session cookie `<prefix>.session_token` (default `better-auth`).
+     * Browsers share cookies across ports, so two stacks on localhost need
+     * different prefixes to keep their sessions apart.
+     */
+    BETTER_AUTH_COOKIE_PREFIX: z
+      .string()
+      .regex(/^[A-Za-z0-9_-]+$/, 'Use letters, digits, - and _ only')
+      .optional(),
     SEED_DEMO_USER: z.enum(['true', 'false']).optional(),
     /** Where emails go out, e.g. `smtps://user:password@smtp.example.com:465`. */
     SMTP_URL: z.url().optional(),

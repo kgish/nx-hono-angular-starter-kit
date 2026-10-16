@@ -33,6 +33,8 @@ export interface AuthConfig {
   mailer: Mailer;
   baseURL?: string;
   trustedOrigins?: string[];
+  /** Session cookie name prefix; better-auth defaults to `better-auth`. */
+  cookiePrefix?: string;
 }
 
 /** Email/password authentication with better-auth, served under `AUTH_PREFIX`. */
@@ -42,6 +44,7 @@ export function createAuth({
   mailer,
   baseURL,
   trustedOrigins,
+  cookiePrefix,
 }: AuthConfig) {
   return betterAuth({
     database,
@@ -71,6 +74,7 @@ export function createAuth({
       },
     },
     advanced: {
+      cookiePrefix,
       // Send emails after answering, so a reset request for an unknown address
       // takes as long as one for a real account. Failures are logged.
       backgroundTasks: { handler: (task) => void task },
