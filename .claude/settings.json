@@ -1,7 +1,8 @@
 {
   "enabledPlugins": {
     "nx@nx-claude-plugins": true,
-    "docker-skills@docker": true
+    "docker-skills@docker": true,
+    "token-optimizer@alexgreensh-token-optimizer": true
   },
   "extraKnownMarketplaces": {
     "nx-claude-plugins": {
@@ -13,11 +14,20 @@
   },
   "sandbox": {
     "network": {
-      "allowUnixSockets": ["/tmp/.nx", "~/.nx"]
+      "allowUnixSockets": [
+        "/tmp/.nx",
+        "~/.nx"
+      ]
     },
     "filesystem": {
-      "allowWrite": ["/tmp/.nx", "~/.nx"],
-      "allowRead": ["/tmp/.nx", "~/.nx"]
+      "allowWrite": [
+        "/tmp/.nx",
+        "~/.nx"
+      ],
+      "allowRead": [
+        "/tmp/.nx",
+        "~/.nx"
+      ]
     }
   }
 }
