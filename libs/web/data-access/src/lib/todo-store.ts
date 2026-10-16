@@ -34,6 +34,9 @@ export class TodoStore {
   );
 
   async load(): Promise<void> {
+    // Todos are per user, and the list may still hold the previous user's
+    // (signed out, then someone else signed in): never show those meanwhile.
+    this.state.update((s) => ({ ...s, todos: [] }));
     await this.run(async () => {
       const todos = await firstValueFrom(this.api.list());
       this.state.update((s) => ({ ...s, todos }));

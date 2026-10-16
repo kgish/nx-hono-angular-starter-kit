@@ -1,14 +1,22 @@
 import type { CreateTodo, Todo, UpdateTodo } from '@fullstack/schemas';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import type { Db } from './client';
 import { todos, type TodoRow } from './schema';
 
+/**
+ * Todos of one user at a time: every method takes the owner's id, and a todo
+ * of someone else is treated as not existing.
+ */
 export interface TodoRepository {
-  list(): Promise<Todo[]>;
-  findById(id: number): Promise<Todo | undefined>;
-  create(input: CreateTodo): Promise<Todo>;
-  update(id: number, input: UpdateTodo): Promise<Todo | undefined>;
-  remove(id: number): Promise<boolean>;
+  list(userId: string): Promise<Todo[]>;
+  findById(userId: string, id: number): Promise<Todo | undefined>;
+  create(userId: string, input: CreateTodo): Promise<Todo>;
+  update(
+    userId: string,
+    id: number,
+    input: UpdateTodo,
+  ): Promise<Todo | undefined>;
+  remove(userId: string, id: number): Promise<boolean>;
 }
 
 export const toTodo = (row: TodoRow): Todo => ({
@@ -19,37 +27,47 @@ export const toTodo = (row: TodoRow): Todo => ({
   updatedAt: row.updatedAt.toISOString(),
 });
 
+const owned = (userId: string, id: number) =>
+  and(eq(todos.id, id), eq(todos.userId, userId));
+
 export class DrizzleTodoRepository implements TodoRepository {
   constructor(private readonly db: Db) {}
 
-  async list() {
-    const rows = await this.db.select().from(todos).orderBy(asc(todos.id));
+  async list(userId: string) {
+    const rows = await this.db
+      .select()
+      .from(todos)
+      .where(eq(todos.userId, userId))
+      .orderBy(asc(todos.id));
     return rows.map(toTodo);
   }
 
-  async findById(id: number) {
-    const [row] = await this.db.select().from(todos).where(eq(todos.id, id));
+  async findById(userId: string, id: number) {
+    const [row] = await this.db.select().from(todos).where(owned(userId, id));
     return row && toTodo(row);
   }
 
-  async create(input: CreateTodo) {
-    const [row] = await this.db.insert(todos).values(input).returning();
+  async create(userId: string, input: CreateTodo) {
+    const [row] = await this.db
+      .insert(todos)
+      .values({ ...input, userId })
+      .returning();
     return toTodo(row);
   }
 
-  async update(id: number, input: UpdateTodo) {
+  async update(userId: string, id: number, input: UpdateTodo) {
     const [row] = await this.db
       .update(todos)
       .set(input)
-      .where(eq(todos.id, id))
+      .where(owned(userId, id))
       .returning();
     return row && toTodo(row);
   }
 
-  async remove(id: number) {
+  async remove(userId: string, id: number) {
     const rows = await this.db
       .delete(todos)
-      .where(eq(todos.id, id))
+      .where(owned(userId, id))
       .returning({ id: todos.id });
     return rows.length > 0;
   }

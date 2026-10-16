@@ -38,6 +38,18 @@ describe('TodoStore', () => {
     expect(store.remaining()).toBe(1);
   });
 
+  it('drops the previous list while loading, as it may be another user’s', async () => {
+    const first = store.load();
+    http.expectOne(ApiPaths.todos).flush([todo(1)]);
+    await first;
+
+    const second = store.load();
+    expect(store.todos()).toEqual([]);
+    http.expectOne(ApiPaths.todos).flush([todo(2)]);
+    await second;
+    expect(store.todos().map((t) => t.id)).toEqual([2]);
+  });
+
   it('surfaces the API validation message', async () => {
     const done = store.add('');
     http.expectOne(ApiPaths.todos).flush(

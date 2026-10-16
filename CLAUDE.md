@@ -116,6 +116,8 @@ The `angular-developer` skill does **not** state these. They are not optional he
   (`apps/api/src/validator.ts`). Error responses use the shared `ApiError` shape.
 - Build the app with `createApp(deps)`; routes get their repository injected, so tests
   can swap in `InMemoryTodoRepository` (`apps/api/src/testing/`).
+- Todos are per user: every `TodoRepository` method takes the owner's id (`c.var.user.id`,
+  set by `requireSession`), and another user's todo is treated as not found (404).
 - After editing `libs/api/db/src/lib/schema.ts`, run `npm run db:generate -- --name=<change>`
   and commit the generated migration. The API applies pending migrations on start.
 - Auth is better-auth (`apps/api/src/auth.ts`), mounted at `AUTH_PREFIX` (`/api/auth`). Its

@@ -8,18 +8,26 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-export const todos = pgTable('todos', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
-  title: varchar('title', { length: 200 }).notNull(),
-  completed: boolean('completed').notNull().default(false),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true })
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+export const todos = pgTable(
+  'todos',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    /** The owner; a user only ever sees and changes their own todos. */
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    title: varchar('title', { length: 200 }).notNull(),
+    completed: boolean('completed').notNull().default(false),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [index('todos_user_id_idx').on(t.userId)],
+);
 
 export type TodoRow = typeof todos.$inferSelect;
 export type NewTodoRow = typeof todos.$inferInsert;
