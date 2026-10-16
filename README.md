@@ -50,7 +50,8 @@ The API mounts [better-auth](https://www.better-auth.com) at `/api/auth` (`apps/
 with email and password sign-in. Users, sessions and accounts live in PostgreSQL
 (`users`, `sessions`, `accounts`, `verifications` in `libs/api/db`); the session is an
 HttpOnly cookie, so the web app keeps no tokens. `/api/todos` answers `401` without a session
-(`requireSession`). The todos are still shared by all users.
+(`requireSession`). Each todo belongs to the user who created it (`todos.user_id`): users
+only see and change their own, and someone else's todo answers `404`.
 
 - **Demo user:** outside production the API creates `demo@example.org` with the password `demo`
   on start (`SEED_DEMO_USER`). Its password is shorter than the 8 characters registration

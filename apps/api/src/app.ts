@@ -6,7 +6,6 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import type { Auth } from './auth';
-import { requireSession } from './require-session';
 import { authRoutes } from './routes/auth';
 import { healthRoutes } from './routes/health';
 import { todoRoutes } from './routes/todos';
@@ -48,8 +47,7 @@ export function createApp({
     .basePath(API_PREFIX)
     .route('/health', healthRoutes(pingDatabase))
     .route('/auth', authRoutes(auth))
-    .use('/todos/*', requireSession(auth))
-    .route('/todos', todoRoutes(todos));
+    .route('/todos', todoRoutes(todos, auth));
 
   return routes;
 }

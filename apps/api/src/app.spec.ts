@@ -57,9 +57,9 @@ describe('API', () => {
     });
   });
 
-  /** Registers Ada and returns her session cookie. */
-  const signUp = async () => {
-    const res = await app.request(ApiPaths.signUp, json(ada));
+  /** Registers a user (Ada by default) and returns the session cookie. */
+  const signUp = async (user = ada) => {
+    const res = await app.request(ApiPaths.signUp, json(user));
     expect(res.status).toBe(200);
     return { Cookie: cookieFrom(res) };
   };
@@ -116,6 +116,45 @@ describe('API', () => {
         (await app.request(ApiPaths.todo(todo.id), { headers: session }))
           .status,
       ).toBe(404);
+    });
+
+    it('belong to the user who created them', async () => {
+      const adaSession = await signUp();
+      const bobSession = await signUp({
+        name: 'Bob',
+        email: 'bob@example.org',
+        password: 'another password',
+      });
+      const created = await app.request(
+        ApiPaths.todos,
+        json({ title: "Ada's todo" }, 'POST', adaSession),
+      );
+      const { id } = TodoSchema.parse(await created.json());
+
+      const bobsList = await app.request(ApiPaths.todos, {
+        headers: bobSession,
+      });
+      expect(await bobsList.json()).toEqual([]);
+
+      // Someone else's todo answers as if it did not exist.
+      const asBob = (init: RequestInit = {}) =>
+        app.request(ApiPaths.todo(id), {
+          ...init,
+          headers: { ...init.headers, ...bobSession },
+        });
+      expect((await asBob()).status).toBe(404);
+      expect((await asBob(json({ completed: true }, 'PATCH'))).status).toBe(
+        404,
+      );
+      expect((await asBob({ method: 'DELETE' })).status).toBe(404);
+
+      const adasTodo = await app.request(ApiPaths.todo(id), {
+        headers: adaSession,
+      });
+      expect(TodoSchema.parse(await adasTodo.json())).toMatchObject({
+        title: "Ada's todo",
+        completed: false,
+      });
     });
 
     it('reject invalid input with the shared error shape', async () => {
