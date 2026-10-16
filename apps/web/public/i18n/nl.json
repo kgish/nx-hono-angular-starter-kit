@@ -1,0 +1,22 @@
+{
+  "app": {
+    "title": "Taken",
+    "language": "Taal"
+  },
+  "todos": {
+    "heading": "Taken",
+    "summary": "{{remaining}} van {{total}} nog te doen",
+    "newTitle": {
+      "label": "Titel van nieuwe taak",
+      "placeholder": "Wat moet er gebeuren?"
+    },
+    "add": "Toevoegen",
+    "delete": "{{title}} verwijderen",
+    "empty": "Nog niets te doen.",
+    "errors": {
+      "titleRequired": "Titel is verplicht",
+      "titleTooLong": "Titel mag maximaal {{max}} tekens lang zijn",
+      "titleInvalid": "Titel is ongeldig"
+    }
+  }
+}

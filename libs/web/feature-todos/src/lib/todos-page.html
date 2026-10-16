@@ -1,8 +1,9 @@
 <section class="todos">
   <header>
-    <h1>Todos</h1>
+    <h1>{{ 'todos.heading' | translate }}</h1>
     <p class="summary">
-      {{ store.remaining() }} of {{ store.todos().length }} remaining
+      {{ 'todos.summary' | translate: { remaining: store.remaining(), total:
+      store.todos().length } }}
     </p>
   </header>
 
@@ -10,17 +11,21 @@
     <input
       type="text"
       name="title"
-      placeholder="What needs doing?"
-      aria-label="New todo title"
+      [placeholder]="'todos.newTitle.placeholder' | translate"
+      [attr.aria-label]="'todos.newTitle.label' | translate"
       [value]="title()"
       (input)="title.set($any($event.target).value)"
       (blur)="touched.set(true)"
       [attr.aria-invalid]="!!titleError()"
     />
-    <button type="submit" [disabled]="store.loading()">Add</button>
+    <button type="submit" [disabled]="store.loading()">
+      {{ 'todos.add' | translate }}
+    </button>
   </form>
-  @if (titleError(); as message) {
-  <p class="field-error" role="alert">{{ message }}</p>
+  @if (titleError(); as error) {
+  <p class="field-error" role="alert">
+    {{ error.key | translate: error.params }}
+  </p>
   } @if (store.error(); as message) {
   <p class="error" role="alert">{{ message }}</p>
   }
@@ -40,13 +45,13 @@
         type="button"
         class="remove"
         (click)="store.remove(todo.id)"
-        [attr.aria-label]="'Delete ' + todo.title"
+        [attr.aria-label]="'todos.delete' | translate: { title: todo.title }"
       >
         ✕
       </button>
     </li>
     } @empty { @if (!store.loading()) {
-    <li class="empty">Nothing to do yet.</li>
+    <li class="empty">{{ 'todos.empty' | translate }}</li>
     } }
   </ul>
 </section>

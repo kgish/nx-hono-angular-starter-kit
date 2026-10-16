@@ -24,6 +24,7 @@ libs/
   api/db/              Drizzle schema, client, repository, migrations (scope:api)
   web/data-access/     TodoApi (HttpClient) + signal-based TodoStore (scope:web)
   web/feature-todos/   Lazy-loaded todos page (scope:web)
+  web/i18n/            LanguageStore: active UI language via ngx-translate (scope:web)
 deploy/                Production compose file and server .env example
 .github/workflows/     CI and deploy pipelines
 ```
@@ -39,6 +40,14 @@ scope plus `scope:shared`, and shared libraries cannot import anything framework
   shared `ApiError` shape on failure.
 - The Angular form validates input with the same schema before calling the API.
 - `TodoApi` parses every response with them, so a contract drift fails loudly in the client.
+
+### Translations
+
+The UI is in English and Dutch through [ngx-translate](https://ngx-translate.org). Strings
+live in `apps/web/public/i18n/<lang>.json`; templates use the `translate` pipe. At start-up
+`LanguageStore` (`@fullstack/web/i18n`) picks the language the user last chose (saved in
+`localStorage`), else the first supported browser language, else English. To add a language,
+add its JSON file and an entry in `LANGUAGES` in `libs/web/i18n/src/lib/language-store.ts`.
 
 ## Prerequisites
 

@@ -1,0 +1,22 @@
+{
+  "app": {
+    "title": "Todos",
+    "language": "Language"
+  },
+  "todos": {
+    "heading": "Todos",
+    "summary": "{{remaining}} of {{total}} remaining",
+    "newTitle": {
+      "label": "New todo title",
+      "placeholder": "What needs doing?"
+    },
+    "add": "Add",
+    "delete": "Delete {{title}}",
+    "empty": "Nothing to do yet.",
+    "errors": {
+      "titleRequired": "Title is required",
+      "titleTooLong": "Title must be at most {{max}} characters",
+      "titleInvalid": "Title is invalid"
+    }
+  }
+}
