@@ -8,9 +8,11 @@ import {
 } from '@angular/core';
 import { CreateTodoSchema } from '@fullstack/schemas';
 import { TodoStore } from '@fullstack/web/data-access';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'lib-todos-page',
+  imports: [TranslatePipe],
   templateUrl: './todos-page.html',
   styleUrl: './todos-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,11 +27,22 @@ export class TodosPage implements OnInit {
   private readonly validation = computed(() =>
     CreateTodoSchema.safeParse({ title: this.title() }),
   );
+  /** The schema owns the rules; the issue code picks the translated message. */
   protected readonly titleError = computed(() => {
     const result = this.validation();
-    return this.touched() && !result.success
-      ? result.error.issues[0]?.message
-      : null;
+    if (!this.touched() || result.success) return null;
+    const issue = result.error.issues[0];
+    switch (issue?.code) {
+      case 'too_small':
+        return { key: 'todos.errors.titleRequired' };
+      case 'too_big':
+        return {
+          key: 'todos.errors.titleTooLong',
+          params: { max: Number(issue.maximum) },
+        };
+      default:
+        return { key: 'todos.errors.titleInvalid' };
+    }
   });
 
   ngOnInit(): void {

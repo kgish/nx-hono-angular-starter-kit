@@ -155,6 +155,8 @@ libs/
                       + TodoStore (signal state)
     feature-todos/  — @fullstack/web/feature-todos: todosRoutes (lazy)      scope:web    type:feature
                       + TodosPage
+    i18n/           — @fullstack/web/i18n: LanguageStore (ngx-translate,    scope:web    type:data-access
+                      localStorage); strings in apps/web/public/i18n/
 ```
 
 ### Dependency rules

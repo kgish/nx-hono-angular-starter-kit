@@ -1,0 +1,17 @@
+<div
+  class="switcher"
+  role="group"
+  [attr.aria-label]="'app.language' | translate"
+>
+  @for (language of store.languages; track language.code) {
+  <button
+    type="button"
+    [attr.lang]="language.code"
+    [title]="language.name"
+    [attr.aria-pressed]="store.current() === language.code"
+    (click)="store.use(language.code)"
+  >
+    {{ language.code | uppercase }}
+  </button>
+  }
+</div>
