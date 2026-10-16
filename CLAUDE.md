@@ -10,7 +10,8 @@
   no `provideZonelessChangeDetection()`. There is no zone.js; never add it or
   `provideZoneChangeDetection()`.
 - **Package manager:** npm — always prefix: `npx nx <command>`
-- **Styling:** SCSS
+- **Styling:** SCSS. Angular Material is installed for the notification snackbar only;
+  its theme is in `apps/web/src/styles.scss`. Other UI is plain HTML and SCSS.
 - **Unit tests:** Vitest for `web` and all `libs/` · `bun test` (`bun:test`) for `apps/api`
 - **Nx Cloud:** no (CI sets `NX_NO_CLOUD=true`)
 - **Library linking:** Classic: `tsconfig.base.json` path aliases (`@fullstack/schemas`,
@@ -28,8 +29,8 @@ Three skill sets are installed. They do not know about each other, so:
   tasks, scaffolding, CI. Never run `ng` commands — always `nx`.
 - **`angular-developer` skill** owns everything _inside_ a file: Angular APIs,
   signals, forms, routing, a11y.
-- **`angular-material` skill** is reference only: Angular Material is not installed
-  (see below).
+- **`angular-material` skill** covers Angular Material and the CDK, which the app uses
+  for notifications (see below).
 - **When any of them conflicts with this file, this file wins.**
 
 ### Nx skills
@@ -75,17 +76,22 @@ easy to get wrong: `signal-forms.md`, `http-client.md` (`httpResource`),
 
 ### `angular-material` skill
 
-Reference only. `@angular/material` and `@angular/cdk` are **not** dependencies: do not
-import from them, and ask before adding them (see Guardrails). Until then, build UI with
-plain HTML and SCSS like the existing components.
+`@angular/material` and `@angular/cdk` are dependencies, pinned with `~` to the same
+minor as `@angular/core` (22.1). Keep them in step when Angular is upgraded. So far only
+the snackbar is used, through `Notifier` (`@fullstack/web/notifications`); the rest of the
+UI is plain HTML and SCSS.
 
-If they are added:
-
+- Show messages with `Notifier` (`success()`, `failure()`, `info()`, each taking a
+  translation key), not by calling `MatSnackBar` directly.
+- The theme is set up by hand in `apps/web/src/styles.scss` (`mat.theme` on `:root`),
+  together with the per-type `notification-<type>` panel classes. There is no `ng add`.
 - The skill documents Material v21.x; this workspace runs Angular 22.
 - Its `ng add` / `ng generate` commands (`core-schematics.md`, the datepicker adapters)
   fall under the never-`ng` rule above. Ask how to install instead.
 - Some examples use `@Input()`, constructor injection and `*ngFor`. The Angular hard
   rules below still apply.
+- The snackbar's own CSS custom properties in the skill (`--mdc-snackbar-*`) are out of
+  date. Style it with `mat.snack-bar-overrides()` instead.
 
 It lives in `.agents/skills/angular-material`; `.claude/skills/angular-material` is a
 symlink to it, so there is one copy to update.
@@ -191,6 +197,8 @@ libs/
     i18n/           — @fullstack/web/i18n: LanguageStore (ngx-translate,    scope:web    type:data-access
                       localStorage), languageInterceptor; strings in
                       apps/web/public/i18n/
+    notifications/  — @fullstack/web/notifications: Notifier (Material      scope:web    type:data-access
+                      snackbar: success/failure/info, close button)
 ```
 
 ### Dependency rules
