@@ -6,6 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { ApiPaths } from '@fullstack/util';
+import { Notifier } from '@fullstack/web/notifications';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { LoginPage } from './login-page';
 
@@ -21,6 +22,7 @@ const user = {
 describe('LoginPage', () => {
   let http: HttpTestingController;
   let navigate: ReturnType<typeof vi.spyOn>;
+  let notifySuccess: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -36,6 +38,9 @@ describe('LoginPage', () => {
     navigate = vi
       .spyOn(TestBed.inject(Router), 'navigateByUrl')
       .mockResolvedValue(true);
+    notifySuccess = vi
+      .spyOn(TestBed.inject(Notifier), 'success')
+      .mockImplementation(() => undefined);
     TestBed.inject(TranslateService).setTranslation('en', {
       auth: {
         login: { passwordReset: 'Your password has been changed.' },
@@ -108,7 +113,7 @@ describe('LoginPage', () => {
     http.expectNone(ApiPaths.signIn);
   });
 
-  it('signs in and opens the todos', async () => {
+  it('signs in, says so and opens the todos', async () => {
     const { fixture, type, submit } = await render();
     type('login-email', ' demo@example.org ');
     type('login-password', 'demo');
@@ -122,6 +127,7 @@ describe('LoginPage', () => {
     request.flush({ redirect: false, token: 't', user });
     await fixture.whenStable();
 
+    expect(notifySuccess).toHaveBeenCalledWith('auth.signedIn');
     expect(navigate).toHaveBeenCalledWith('/');
   });
 
@@ -139,6 +145,7 @@ describe('LoginPage', () => {
     await fixture.whenStable();
 
     expect(text('[role="alert"]')).toBe('Invalid email or password');
+    expect(notifySuccess).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

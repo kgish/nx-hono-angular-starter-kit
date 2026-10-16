@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 :root {
   color-scheme: light dark;
   --bg: #ffffff;
@@ -21,6 +23,15 @@
     --accent: #4493f8;
     --danger: #f85149;
   }
+
+  // Material's system tokens, for the components the app uses (the snackbar).
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: system-ui,
+      density: 0,
+    )
+  );
 }
 
 * {
@@ -66,4 +77,42 @@ button[type='submit'] {
   &:disabled {
     opacity: 0.6;
   }
+}
+
+// Notifications (Notifier in @fullstack/web/notifications) by type. The fills
+// are the light-scheme shades in both schemes, so white text stays readable.
+.mat-mdc-snack-bar-container.notification {
+  // Clear the sticky footer.
+  margin-bottom: calc(var(--footer-height) + 0.5rem);
+
+  @include mat.snack-bar-overrides(
+    (
+      supporting-text-color: #fff,
+      button-color: #fff,
+    )
+  );
+}
+
+.notification-success {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #1a7f37,
+    )
+  );
+}
+
+.notification-failure {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #cf222e,
+    )
+  );
+}
+
+.notification-info {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #0969da,
+    )
+  );
 }

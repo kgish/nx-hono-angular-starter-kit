@@ -1,10 +1,37 @@
 @if (auth.user(); as user) {
 <div class="user-menu">
   <span class="name" [title]="user.email">{{ user.name }}</span>
-  <button type="button" (click)="signOut()">
+  <button type="button" (click)="confirmDialog.showModal()">
     {{ 'auth.signOut' | translate }}
   </button>
 </div>
+<dialog
+  #confirmDialog
+  class="confirm"
+  closedby="any"
+  aria-labelledby="sign-out-heading"
+  aria-describedby="sign-out-message"
+>
+  <h2 id="sign-out-heading">{{ 'auth.signOutConfirm.heading' | translate }}</h2>
+  <p id="sign-out-message">{{ 'auth.signOutConfirm.message' | translate }}</p>
+  <div class="actions">
+    <button
+      type="button"
+      class="cancel"
+      autofocus
+      (click)="confirmDialog.close()"
+    >
+      {{ 'auth.signOutConfirm.cancel' | translate }}
+    </button>
+    <button
+      type="button"
+      class="confirm-yes"
+      (click)="confirmDialog.close(); signOut()"
+    >
+      {{ 'auth.signOutConfirm.confirm' | translate }}
+    </button>
+  </div>
+</dialog>
 } @else if (auth.isGuest() && !onLoginPage()) {
 <a class="sign-in" [routerLink]="loginPath">{{ 'auth.signIn' | translate }}</a>
 }

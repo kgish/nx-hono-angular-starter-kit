@@ -30,3 +30,41 @@ button,
     outline-offset: 2px;
   }
 }
+
+// Asks before signing out. Opened with showModal(), so the browser centres it,
+// traps focus and closes it on Escape.
+.confirm {
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+
+  &::backdrop {
+    background: rgb(0 0 0 / 0.4);
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  p {
+    margin: 0 0 1.25rem;
+    color: var(--muted);
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.confirm-yes {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}

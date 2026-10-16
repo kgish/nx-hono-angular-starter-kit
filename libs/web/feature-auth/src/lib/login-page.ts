@@ -15,6 +15,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { type SignIn, SignInSchema } from '@fullstack/schemas';
 import { type AuthErrorCode, AuthStore } from '@fullstack/web/data-access';
+import { Notifier } from '@fullstack/web/notifications';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fieldMessage } from './field-message';
 
@@ -28,6 +29,7 @@ import { fieldMessage } from './field-message';
 export class LoginPage {
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly notifier = inject(Notifier);
 
   /** Set by the reset page (`?passwordReset=true`) after a new password. */
   readonly passwordReset = input<string>();
@@ -50,8 +52,12 @@ export class LoginPage {
     await submit(this.loginForm, async () => {
       this.error.set(null);
       const result = await this.auth.signIn(SignInSchema.parse(this.model()));
-      if (result.ok) await this.router.navigateByUrl('/');
-      else this.error.set(result.error);
+      if (result.ok) {
+        this.notifier.success('auth.signedIn');
+        await this.router.navigateByUrl('/');
+      } else {
+        this.error.set(result.error);
+      }
       return undefined;
     });
   }

@@ -32,6 +32,14 @@
     "passwordHint": "Minimaal {{min}} tekens",
     "signIn": "Inloggen",
     "signOut": "Uitloggen",
+    "signOutConfirm": {
+      "heading": "Uitloggen",
+      "message": "Je staat op het punt uit te loggen. Weet je het zeker?",
+      "cancel": "Annuleren",
+      "confirm": "Ja"
+    },
+    "signedIn": "Succesvol ingelogd",
+    "signedOut": "Succesvol uitgelogd",
     "login": {
       "heading": "Inloggen",
       "submit": "Inloggen",
@@ -87,5 +95,8 @@
   "footer": {
     "copyright": "© {{year}} Nx Hono Angular Starter Kit",
     "version": "Versie {{version}}"
+  },
+  "notifications": {
+    "close": "Sluiten"
   }
 }

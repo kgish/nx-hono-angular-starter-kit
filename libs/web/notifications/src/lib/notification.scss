@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+svg {
+  fill: currentColor;
+}
+
+// Takes the message's colour, which each notification type sets.
+.close {
+  color: inherit;
+}

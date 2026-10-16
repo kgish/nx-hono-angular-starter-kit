@@ -32,6 +32,14 @@
     "passwordHint": "At least {{min}} characters",
     "signIn": "Sign in",
     "signOut": "Sign out",
+    "signOutConfirm": {
+      "heading": "Sign out",
+      "message": "You are about to be signed out. Are you sure?",
+      "cancel": "Cancel",
+      "confirm": "Yes"
+    },
+    "signedIn": "Logged in successfully",
+    "signedOut": "Logged out successfully",
     "login": {
       "heading": "Sign in",
       "submit": "Sign in",
@@ -87,5 +95,8 @@
   "footer": {
     "copyright": "© {{year}} Nx Hono Angular Starter Kit",
     "version": "Version {{version}}"
+  },
+  "notifications": {
+    "close": "Close"
   }
 }
