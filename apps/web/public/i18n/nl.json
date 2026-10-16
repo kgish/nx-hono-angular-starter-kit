@@ -40,6 +40,7 @@
     },
     "signedIn": "Succesvol ingelogd",
     "signedOut": "Succesvol uitgelogd",
+    "accountCreated": "Account succesvol aangemaakt",
     "login": {
       "heading": "Inloggen",
       "submit": "Inloggen",

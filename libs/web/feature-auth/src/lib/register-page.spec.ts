@@ -6,6 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { ApiPaths } from '@fullstack/util';
+import { Notifier } from '@fullstack/web/notifications';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { RegisterPage } from './register-page';
 
@@ -21,6 +22,7 @@ const user = {
 describe('RegisterPage', () => {
   let http: HttpTestingController;
   let navigate: ReturnType<typeof vi.spyOn>;
+  let notifySuccess: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -36,6 +38,9 @@ describe('RegisterPage', () => {
     navigate = vi
       .spyOn(TestBed.inject(Router), 'navigateByUrl')
       .mockResolvedValue(true);
+    notifySuccess = vi
+      .spyOn(TestBed.inject(Notifier), 'success')
+      .mockImplementation(() => undefined);
     TestBed.inject(TranslateService).setTranslation('en', {
       auth: {
         passwordHint: 'At least {{min}} characters',
@@ -96,7 +101,7 @@ describe('RegisterPage', () => {
     expect(text('#register-name-error')).toBe('Name is required');
   });
 
-  it('creates the account and opens the todos', async () => {
+  it('creates the account, says so and opens the todos', async () => {
     const { fixture, fill, submit } = await render();
     fill('correct horse');
     submit();
@@ -110,6 +115,7 @@ describe('RegisterPage', () => {
     request.flush({ token: 't', user });
     await fixture.whenStable();
 
+    expect(notifySuccess).toHaveBeenCalledWith('auth.accountCreated');
     expect(navigate).toHaveBeenCalledWith('/');
   });
 
@@ -128,6 +134,7 @@ describe('RegisterPage', () => {
     expect(text('[role="alert"]')).toBe(
       'An account with this email address already exists',
     );
+    expect(notifySuccess).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

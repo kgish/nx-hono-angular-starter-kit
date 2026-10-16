@@ -18,6 +18,7 @@ import {
   SignUpSchema,
 } from '@fullstack/schemas';
 import { type AuthErrorCode, AuthStore } from '@fullstack/web/data-access';
+import { Notifier } from '@fullstack/web/notifications';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fieldMessage } from './field-message';
 
@@ -31,6 +32,7 @@ import { fieldMessage } from './field-message';
 export class RegisterPage {
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly notifier = inject(Notifier);
 
   protected readonly passwordMinLength = PASSWORD_MIN_LENGTH;
   protected readonly model = signal<SignUp>({
@@ -58,8 +60,12 @@ export class RegisterPage {
       this.error.set(null);
       // Signing up also signs the new account in.
       const result = await this.auth.signUp(SignUpSchema.parse(this.model()));
-      if (result.ok) await this.router.navigateByUrl('/');
-      else this.error.set(result.error);
+      if (result.ok) {
+        this.notifier.success('auth.accountCreated');
+        await this.router.navigateByUrl('/');
+      } else {
+        this.error.set(result.error);
+      }
       return undefined;
     });
   }
