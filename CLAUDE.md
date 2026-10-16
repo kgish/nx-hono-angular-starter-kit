@@ -1,10 +1,234 @@
-# Working in this repo
+# CLAUDE.md
 
-- Run tasks through Nx: `npx nx <target> <project>` or `npx nx run-many -t lint test typecheck build`.
-- Projects: `web` (Angular), `api` (Hono on Bun), `shared-schemas`, `shared-util`, `api-db`,
-  `web-data-access`, `web-feature-todos`. See README.md for the layout and boundary tags.
+## Project
+
+- **Name:** nx-hono-angular-starter-kit — Angular frontend and Hono API on Bun sharing Zod
+  schemas, backed by PostgreSQL. Workspace alias scope: `@fullstack/*`. See README.md.
+- **Angular:** 22 · TypeScript 6 strict · **Nx 23 monorepo**
+- **Backend:** Hono 4 on Bun · Drizzle ORM (`bun:sql`) · PostgreSQL 18 · Zod 4
+- **Change detection:** zoneless. It is the default since Angular 21, so `app.config.ts` has
+  no `provideZonelessChangeDetection()`. There is no zone.js; never add it or
+  `provideZoneChangeDetection()`.
+- **Package manager:** npm — always prefix: `npx nx <command>`
+- **Styling:** SCSS
+- **Unit tests:** Vitest for `web` and all `libs/` · `bun test` (`bun:test`) for `apps/api`
+- **Nx Cloud:** no (CI sets `NX_NO_CLOUD=true`)
+- **Library linking:** Classic: `tsconfig.base.json` path aliases (`@fullstack/schemas`,
+  `@fullstack/web/data-access`, …). Do NOT convert to package.json workspaces.
+- **Forms:** Signal Forms for all new forms; leave existing forms alone. Validate with the
+  shared Zod schemas from `@fullstack/schemas` (`validateStandardSchema`) instead of
+  re-declaring the rules. The todos page form (plain signals + Zod) predates this rule.
+- **File naming:** Angular v20+ style: `todos-page.ts` → `class TodosPage`
+
+## Skills in use
+
+Two skill sets are installed. They do not know about each other, so:
+
+- **Nx skills** own everything about the _workspace_: finding projects, running
+  tasks, scaffolding, CI. Never run `ng` commands — always `nx`.
+- **`angular-developer` skill** owns everything _inside_ a file: Angular APIs,
+  signals, forms, routing, a11y.
+- **When either conflicts with this file, this file wins.**
+
+### Nx skills
+
+- `nx-workspace` — invoke **first** for any question about projects, targets,
+  tags or dependencies. Follow its rule: never read `project.json` directly,
+  it is only partial. Use `nx show project <name> --json`.
+- `nx-run-tasks` — running build / test / lint / affected.
+- `nx-generate` — invoke **before** creating any app, lib, component or service.
+  Always `--dry-run` first, always `--no-interactive`.
+- `nx-plugins` — finding and adding plugins (ask me before adding).
+- `nx-import` — only for importing an outside repo into this workspace. Ignore
+  it during normal work.
+- Ignore `link-workspace-packages`. It says "do not patch around with tsconfig paths",
+  which is wrong here: this workspace links libraries through tsconfig path aliases.
+- Ignore `monitor-ci`. There is no Nx Cloud.
+
+**Override:** The Nx MCP server IS configured (Nx Claude plugin, enabled in
+`.claude/settings.json`). Use it as the Nx guidelines describe.
+
+### `angular-developer` skill
+
+Open the reference file instead of relying on memory for these — they are new and
+easy to get wrong: `signal-forms.md`, `http-client.md` (`httpResource`),
+`resource.md`, `linked-signal.md`, `effects.md`, `angular-aria.md`,
+`naming-conventions.md`.
+
+**Overrides — that skill is written for a plain Angular CLI project and never mentions Nx:**
+
+- Ignore its `SKILL.md` rule 3 ("run `ng build` after generating code").
+  Verify with the Definition of done below instead.
+- Never run `ng build`, `ng serve`, `ng test`, `ng e2e`, `ng generate`,
+  `ng add`, `ng new`, `ng update`, or `ng version`. Always `nx`.
+- Ignore `cli.md` entirely. Scaffolding goes through the `nx-generate` skill.
+- Ignore `e2e-testing.md`. This repo has no E2E setup; ask before adding one.
+- `testing-fundamentals.md` assumes Vitest and zoneless — both true here — but it bans
+  `fixture.detectChanges()` outright. Follow the Testing section below, which allows one
+  exception.
+- Ignore `mcp.md`. The Angular CLI MCP server is not used here.
+- Ignore the `angular-new-app` skill.
+- There is no `angular.json`. Never create one.
+- Styling examples use `.css`. Use SCSS.
+
+## Commands
+
+```bash
+npm ci                                                      # install
+npm run db:up                                               # PostgreSQL in Docker on :5432
+npm run dev                                                 # API on :3000 + web on :4200
+npx nx serve <project>                                      # api or web
+npx nx test <lib> -- src/lib/<file>.spec.ts                 # single file, Vitest libs — prefer this
+npx nx test web --include=apps/web/src/app/<file>.spec.ts   # single file, web app
+npx nx test api -- src/<file>.spec.ts                       # single file, API (bun test)
+npx nx affected -t lint test typecheck build
+npx nx format:write
+npm run db:generate -- --name=<change>                      # after editing libs/api/db/src/lib/schema.ts
+```
+
+**Definition of done:** after any change, run `npx nx format:write`, then
+`npx nx affected -t lint test typecheck build` (CI runs `nx format:check` and the same
+targets). Do not report the task as finished until it passes. A change inside a library
+can break its consumers, so testing only the project you touched is not enough.
+
+## Angular hard rules
+
+The `angular-developer` skill does **not** state these. They are not optional here.
+
+- Always `changeDetection: ChangeDetectionStrategy.OnPush`.
+- Always `inject()`. Never constructor injection.
+- Always `input()` / `input.required()` / `output()` / `model()`.
+  Never `@Input()` / `@Output()`.
+- Always `viewChild()` / `contentChild()`. Never the decorator queries.
+- Always `@if` / `@for` (with `track`) / `@switch`.
+  Never `*ngIf` / `*ngFor` / `*ngSwitch`.
+- Never write `standalone: true`. Never create an `NgModule`.
+- `@defer` is not general control flow. Use it only for heavy, below-the-fold
+  blocks, and only when I ask. Do not add it on your own.
+- RxJS lives only in data-access libraries. Convert to signals before the
+  template. Never subscribe manually inside a component.
+- Self-closing tags for components with no projected content: `<app-profile />`.
+
+## API rules (Hono on Bun)
+
 - API contracts live in `libs/shared/schemas`; change them there, never duplicate types.
-- The API runs on Bun: use `bun test` style tests (`bun:test`) in `apps/api`, Vitest elsewhere.
-- Angular: standalone components, signals, `OnPush`, zoneless; no NgModules.
-- After editing `libs/api/db/src/lib/schema.ts`, run `npm run db:generate -- --name=<change>`.
-- Run `npx nx format:write` before committing; CI runs `nx format:check`.
+- Validate request bodies and params with the shared schemas through `validate()`
+  (`apps/api/src/validator.ts`). Error responses use the shared `ApiError` shape.
+- Build the app with `createApp(deps)`; routes get their repository injected, so tests
+  can swap in `InMemoryTodoRepository` (`apps/api/src/testing/`).
+- After editing `libs/api/db/src/lib/schema.ts`, run `npm run db:generate -- --name=<change>`
+  and commit the generated migration. The API applies pending migrations on start.
+
+## Architecture & boundaries
+
+- `apps/` — deployable apps only. No shared logic here.
+- `libs/` — all reusable code, grouped by domain (`web`, `api`, `shared`).
+- `apps/web` — Angular shell. `app.config.ts` provides `HttpClient` (`withFetch()`) and the
+  router (`withComponentInputBinding()`); `app.routes.ts` lazy-loads feature libs with
+  `loadChildren`. The dev server proxies `/api` to `localhost:3000` (`proxy.conf.json`).
+- `apps/api` — Hono app on Bun: `main.ts` wires the database into `createApp()`, routes live in
+  `src/routes/`, and `migrate.ts` runs migrations.
+- **State:** Angular Signals only — no NgRx or other state library. Stores are
+  `providedIn: 'root'` services that keep one private `signal` and expose `computed` slices
+  (see `TodoStore`).
+- **Data access:** REST over `HttpClient` with paths from `ApiPaths` (`@fullstack/util`).
+  Every response is parsed with the shared Zod schemas, so contract drift fails loudly.
+  No auth yet.
+
+### Library structure
+
+```
+apps/
+  api/              — Hono app on Bun                                      scope:api    type:app
+  web/              — Angular shell + app routes                           scope:web    type:app
+libs/
+  shared/
+    schemas/        — @fullstack/schemas: Zod schemas + inferred types      scope:shared type:schemas
+                      (TodoSchema, CreateTodoSchema, ApiErrorSchema, …)
+    util/           — @fullstack/util: framework-free helpers               scope:shared type:util
+                      (ApiPaths, API_PREFIX, Result)
+  api/
+    db/             — @fullstack/api/db: Drizzle schema, client,            scope:api    type:data-access
+                      TodoRepository, migrations/
+  web/
+    data-access/    — @fullstack/web/data-access: TodoApi (HttpClient)      scope:web    type:data-access
+                      + TodoStore (signal state)
+    feature-todos/  — @fullstack/web/feature-todos: todosRoutes (lazy)      scope:web    type:feature
+                      + TodosPage
+```
+
+### Dependency rules
+
+Every project carries one `scope:*` and one `type:*` tag. Both must allow an import.
+
+| tag                | may depend on                       |
+| ------------------ | ----------------------------------- |
+| `scope:web`        | `scope:web`, `scope:shared`         |
+| `scope:api`        | `scope:api`, `scope:shared`         |
+| `scope:shared`     | `scope:shared` (framework-free)     |
+| `type:app`         | feature, data-access, schemas, util |
+| `type:feature`     | data-access, schemas, util          |
+| `type:data-access` | data-access, schemas, util          |
+| `type:schemas`     | schemas                             |
+| `type:util`        | util                                |
+
+Enforced by `@nx/enforce-module-boundaries` in ESLint. If unsure whether an
+import is allowed, run lint — do not guess.
+
+- Import across libraries with the workspace alias only (e.g. `@fullstack/web/data-access`).
+- Relative imports only **inside** a library.
+- Each library exposes its public API through `index.ts`.
+  Never deep-import into another library's `src/`.
+- New libraries default to **non-buildable** unless I say otherwise.
+
+## Testing
+
+**Angular (zoneless, Vitest):**
+
+- Act → `await fixture.whenStable()` → assert. Every test is `async`.
+- Do not call `fixture.detectChanges()`, with one exception: to trigger the first render
+  (and `ngOnInit`) before flushing `HttpTestingController`. Stores register requests as
+  `PendingTasks`, so awaiting `whenStable()` before the flush hangs. See
+  `todos-page.spec.ts`.
+
+**API (`bun:test`):**
+
+- Import from `bun:test`, never Vitest. Test through `app.request()` against
+  `createApp()` with `InMemoryTodoRepository`; unit tests need no database.
+
+Both:
+
+- Test behaviour through the public API. Do not test private methods.
+- Do not delete a failing test to make the suite pass. Fix it or tell me.
+
+## Guardrails
+
+- Do not add or upgrade dependencies without asking. This includes `nx add`.
+- Do not run `git commit`, `git push`, or `nx migrate`.
+- Ask before running `nx reset` — it clears the cache and is slow to recover.
+- Do not edit `dist/`, `.nx/`, or lockfiles.
+- If a rule here conflicts with existing code, ask instead of guessing.
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+## General Guidelines for working with Nx
+
+- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
+- You have access to the Nx MCP server and its tools, use them to help the user
+- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
+- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+
+## Scaffolding & Generators
+
+- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+
+## When to use nx_docs
+
+- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
+- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
+- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+
+<!-- nx configuration end-->
