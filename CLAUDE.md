@@ -22,13 +22,15 @@
 
 ## Skills in use
 
-Two skill sets are installed. They do not know about each other, so:
+Three skill sets are installed. They do not know about each other, so:
 
 - **Nx skills** own everything about the _workspace_: finding projects, running
   tasks, scaffolding, CI. Never run `ng` commands — always `nx`.
 - **`angular-developer` skill** owns everything _inside_ a file: Angular APIs,
   signals, forms, routing, a11y.
-- **When either conflicts with this file, this file wins.**
+- **`angular-material` skill** is reference only: Angular Material is not installed
+  (see below).
+- **When any of them conflicts with this file, this file wins.**
 
 ### Nx skills
 
@@ -70,6 +72,23 @@ easy to get wrong: `signal-forms.md`, `http-client.md` (`httpResource`),
 - Ignore the `angular-new-app` skill.
 - There is no `angular.json`. Never create one.
 - Styling examples use `.css`. Use SCSS.
+
+### `angular-material` skill
+
+Reference only. `@angular/material` and `@angular/cdk` are **not** dependencies: do not
+import from them, and ask before adding them (see Guardrails). Until then, build UI with
+plain HTML and SCSS like the existing components.
+
+If they are added:
+
+- The skill documents Material v21.x; this workspace runs Angular 22.
+- Its `ng add` / `ng generate` commands (`core-schematics.md`, the datepicker adapters)
+  fall under the never-`ng` rule above. Ask how to install instead.
+- Some examples use `@Input()`, constructor injection and `*ngFor`. The Angular hard
+  rules below still apply.
+
+It lives in `.agents/skills/angular-material`; `.claude/skills/angular-material` is a
+symlink to it, so there is one copy to update.
 
 ## Commands
 
