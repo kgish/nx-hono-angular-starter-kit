@@ -69,5 +69,6 @@
       "style": "scss",
       "changeDetection": "OnPush"
     }
-  }
+  },
+  "analytics": false
 }
