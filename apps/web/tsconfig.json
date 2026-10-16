@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "module": "preserve"
+    "module": "preserve",
+    "resolveJsonModule": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -83,5 +83,9 @@
       "submit": "Save password",
       "requestNew": "Request a new link"
     }
+  },
+  "footer": {
+    "copyright": "© {{year}} The Music Hub",
+    "version": "Version {{version}}"
   }
 }

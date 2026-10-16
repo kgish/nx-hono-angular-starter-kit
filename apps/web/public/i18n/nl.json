@@ -83,5 +83,9 @@
       "submit": "Wachtwoord opslaan",
       "requestNew": "Vraag een nieuwe link aan"
     }
+  },
+  "footer": {
+    "copyright": "© {{year}} The Music Hub",
+    "version": "Versie {{version}}"
   }
 }

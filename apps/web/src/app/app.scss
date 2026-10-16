@@ -1,0 +1,11 @@
+// Toolbar on top, footer at the bottom, and the page fills the space in
+// between, so the footer sits at the bottom even when the page is short.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+main {
+  flex: 1;
+}

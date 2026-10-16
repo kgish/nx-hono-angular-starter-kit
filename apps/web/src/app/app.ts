@@ -7,12 +7,14 @@ import {
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { translate } from '@ngx-translate/core';
+import { Footer } from './footer';
 import { Toolbar } from './toolbar';
 
 @Component({
-  imports: [RouterOutlet, Toolbar],
+  imports: [RouterOutlet, Toolbar, Footer],
   selector: 'app-root',
   templateUrl: './app.html',
+  styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
