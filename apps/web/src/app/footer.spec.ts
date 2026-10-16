@@ -16,17 +16,19 @@ describe('Footer', () => {
     });
   });
 
-  it('shows the copyright and the app version on the left', async () => {
+  it('shows the copyright on the left and the app version on the right', async () => {
     const fixture = TestBed.createComponent(Footer);
     await fixture.whenStable();
-    const start = (fixture.nativeElement as HTMLElement).querySelector(
-      'footer .start',
+    const footer = (fixture.nativeElement as HTMLElement).querySelector(
+      'footer',
     );
 
-    expect(start?.querySelector('.copyright')?.textContent?.trim()).toBe(
+    expect(footer?.firstElementChild?.className).toBe('copyright');
+    expect(footer?.firstElementChild?.textContent?.trim()).toBe(
       `© ${new Date().getFullYear()} Starter Kit`,
     );
-    expect(start?.querySelector('.version')?.textContent?.trim()).toMatch(
+    expect(footer?.lastElementChild?.className).toBe('version');
+    expect(footer?.lastElementChild?.textContent?.trim()).toMatch(
       /^Version \d+\.\d+\.\d+/,
     );
   });
