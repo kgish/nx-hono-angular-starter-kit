@@ -24,9 +24,25 @@ services:
       dockerfile: apps/api/Dockerfile
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@db:5432/${POSTGRES_DB:-app}
+      # Local stack only: a fixed secret and the demo user (demo@example.org / demo).
+      BETTER_AUTH_SECRET: local-docker-better-auth-secret-not-for-production
+      BETTER_AUTH_URL: http://localhost:8080
+      SEED_DEMO_USER: 'true'
+      SMTP_URL: smtp://mailpit:1025
+      MAIL_FROM: Todos <no-reply@localhost>
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  # Catches every email the API sends instead of delivering it.
+  # SMTP on :1025 (for `npm run dev`), inbox at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.31.6
+    ports:
+      - '1025:1025'
+      - '8025:8025'
 
   web:
     build:

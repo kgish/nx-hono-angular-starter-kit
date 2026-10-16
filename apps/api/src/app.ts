@@ -5,11 +5,15 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
+import type { Auth } from './auth';
+import { requireSession } from './require-session';
+import { authRoutes } from './routes/auth';
 import { healthRoutes } from './routes/health';
 import { todoRoutes } from './routes/todos';
 
 export interface AppDeps {
   todos: TodoRepository;
+  auth: Auth;
   pingDatabase: () => Promise<boolean>;
   corsOrigin?: string;
   log?: boolean;
@@ -17,6 +21,7 @@ export interface AppDeps {
 
 export function createApp({
   todos,
+  auth,
   pingDatabase,
   corsOrigin,
   log = true,
@@ -32,12 +37,18 @@ export function createApp({
 
   if (log) app.use(logger());
   app.use(secureHeaders());
+  // Credentials let a browser on another origin send the session cookie.
   if (corsOrigin)
-    app.use(`${API_PREFIX}/*`, cors({ origin: corsOrigin.split(',') }));
+    app.use(
+      `${API_PREFIX}/*`,
+      cors({ origin: corsOrigin.split(','), credentials: true }),
+    );
 
   const routes = app
     .basePath(API_PREFIX)
     .route('/health', healthRoutes(pingDatabase))
+    .route('/auth', authRoutes(auth))
+    .use('/todos/*', requireSession(auth))
     .route('/todos', todoRoutes(todos));
 
   return routes;

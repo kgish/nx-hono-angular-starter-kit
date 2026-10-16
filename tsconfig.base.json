@@ -23,7 +23,8 @@
       "@fullstack/api/db": ["./libs/api/db/src/index.ts"],
       "@fullstack/web/data-access": ["./libs/web/data-access/src/index.ts"],
       "@fullstack/web/feature-todos": ["./libs/web/feature-todos/src/index.ts"],
-      "@fullstack/web/i18n": ["./libs/web/i18n/src/index.ts"]
+      "@fullstack/web/i18n": ["./libs/web/i18n/src/index.ts"],
+      "@fullstack/web/feature-auth": ["./libs/web/feature-auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

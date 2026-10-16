@@ -18,5 +18,63 @@
       "titleTooLong": "Title must be at most {{max}} characters",
       "titleInvalid": "Title is invalid"
     }
+  },
+  "auth": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least {{min}} characters",
+    "signOut": "Sign out",
+    "login": {
+      "heading": "Sign in",
+      "submit": "Sign in",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "No account yet?",
+      "register": "Create one",
+      "passwordReset": "Your password has been changed. Sign in with your new password."
+    },
+    "register": {
+      "heading": "Create an account",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "forgotPassword": {
+      "heading": "Reset your password",
+      "intro": "Enter your email address and we'll send you a link to reset your password.",
+      "submit": "Send reset link",
+      "sent": "If an account exists for {{email}}, you will receive a reset link shortly.",
+      "back": "Back to sign in"
+    },
+    "errors": {
+      "name": {
+        "required": "Name is required",
+        "tooLong": "Name must be at most {{max}} characters",
+        "invalid": "Name is invalid"
+      },
+      "email": {
+        "required": "Email is required",
+        "invalid": "Enter a valid email address"
+      },
+      "password": {
+        "required": "Password is required",
+        "tooShort": "Password must be at least {{min}} characters",
+        "tooLong": "Password must be at most {{max}} characters",
+        "invalid": "Password is invalid"
+      },
+      "invalidCredentials": "Invalid email or password",
+      "emailTaken": "An account with this email address already exists",
+      "invalidInput": "Please check your details and try again",
+      "tooManyRequests": "Too many attempts. Wait a moment and try again.",
+      "unreachable": "Cannot reach the server",
+      "unknown": "Something went wrong. Please try again.",
+      "invalidToken": "This reset link is invalid or has expired."
+    },
+    "resetPassword": {
+      "heading": "Choose a new password",
+      "newPassword": "New password",
+      "submit": "Save password",
+      "requestNew": "Request a new link"
+    }
   }
 }

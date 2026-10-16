@@ -18,5 +18,63 @@
       "titleTooLong": "Titel mag maximaal {{max}} tekens lang zijn",
       "titleInvalid": "Titel is ongeldig"
     }
+  },
+  "auth": {
+    "name": "Naam",
+    "email": "E-mailadres",
+    "password": "Wachtwoord",
+    "passwordHint": "Minimaal {{min}} tekens",
+    "signOut": "Uitloggen",
+    "login": {
+      "heading": "Inloggen",
+      "submit": "Inloggen",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "noAccount": "Nog geen account?",
+      "register": "Maak er een aan",
+      "passwordReset": "Je wachtwoord is gewijzigd. Log in met je nieuwe wachtwoord."
+    },
+    "register": {
+      "heading": "Account aanmaken",
+      "submit": "Account aanmaken",
+      "haveAccount": "Heb je al een account?",
+      "login": "Inloggen"
+    },
+    "forgotPassword": {
+      "heading": "Wachtwoord opnieuw instellen",
+      "intro": "Vul je e-mailadres in en we sturen je een link om je wachtwoord opnieuw in te stellen.",
+      "submit": "Link versturen",
+      "sent": "Als er een account bestaat voor {{email}}, ontvang je binnenkort een link.",
+      "back": "Terug naar inloggen"
+    },
+    "errors": {
+      "name": {
+        "required": "Naam is verplicht",
+        "tooLong": "Naam mag maximaal {{max}} tekens lang zijn",
+        "invalid": "Naam is ongeldig"
+      },
+      "email": {
+        "required": "E-mailadres is verplicht",
+        "invalid": "Vul een geldig e-mailadres in"
+      },
+      "password": {
+        "required": "Wachtwoord is verplicht",
+        "tooShort": "Wachtwoord moet minimaal {{min}} tekens lang zijn",
+        "tooLong": "Wachtwoord mag maximaal {{max}} tekens lang zijn",
+        "invalid": "Wachtwoord is ongeldig"
+      },
+      "invalidCredentials": "Onjuist e-mailadres of wachtwoord",
+      "emailTaken": "Er bestaat al een account met dit e-mailadres",
+      "invalidInput": "Controleer je gegevens en probeer het opnieuw",
+      "tooManyRequests": "Te veel pogingen. Wacht even en probeer het opnieuw.",
+      "unreachable": "Kan de server niet bereiken",
+      "unknown": "Er ging iets mis. Probeer het opnieuw.",
+      "invalidToken": "Deze link is ongeldig of verlopen."
+    },
+    "resetPassword": {
+      "heading": "Kies een nieuw wachtwoord",
+      "newPassword": "Nieuw wachtwoord",
+      "submit": "Wachtwoord opslaan",
+      "requestNew": "Vraag een nieuwe link aan"
+    }
   }
 }

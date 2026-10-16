@@ -1,0 +1,63 @@
+<section class="auth">
+  <h1>{{ 'auth.login.heading' | translate }}</h1>
+
+  @if (passwordReset()) {
+  <p class="notice" role="status">
+    {{ 'auth.login.passwordReset' | translate }}
+  </p>
+  }
+
+  <form (submit)="submit($event)" novalidate>
+    <div class="field">
+      <label for="login-email">{{ 'auth.email' | translate }}</label>
+      <input
+        id="login-email"
+        type="email"
+        autocomplete="email"
+        [formField]="loginForm.email"
+        [attr.aria-invalid]="!!emailError()"
+        [attr.aria-describedby]="emailError() ? 'login-email-error' : null"
+      />
+      @if (emailError(); as message) {
+      <p class="field-error" id="login-email-error">
+        {{ message.key | translate: message.params }}
+      </p>
+      }
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label for="login-password">{{ 'auth.password' | translate }}</label>
+        <a routerLink="/forgot-password">
+          {{ 'auth.login.forgotPassword' | translate }}
+        </a>
+      </div>
+      <input
+        id="login-password"
+        type="password"
+        autocomplete="current-password"
+        [formField]="loginForm.password"
+        [attr.aria-invalid]="!!passwordError()"
+        [attr.aria-describedby]="passwordError() ? 'login-password-error' : null"
+      />
+      @if (passwordError(); as message) {
+      <p class="field-error" id="login-password-error">
+        {{ message.key | translate: message.params }}
+      </p>
+      }
+    </div>
+
+    @if (error(); as code) {
+    <p class="error" role="alert">{{ 'auth.errors.' + code | translate }}</p>
+    }
+
+    <button type="submit" [disabled]="loginForm().submitting()">
+      {{ 'auth.login.submit' | translate }}
+    </button>
+  </form>
+
+  <p class="switch">
+    {{ 'auth.login.noAccount' | translate }}
+    <a routerLink="/register">{{ 'auth.login.register' | translate }}</a>
+  </p>
+</section>

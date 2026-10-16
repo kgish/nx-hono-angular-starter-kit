@@ -1,0 +1,75 @@
+<section class="auth">
+  <h1>{{ 'auth.register.heading' | translate }}</h1>
+
+  <form (submit)="submit($event)" novalidate>
+    <div class="field">
+      <label for="register-name">{{ 'auth.name' | translate }}</label>
+      <input
+        id="register-name"
+        type="text"
+        autocomplete="name"
+        [formField]="registerForm.name"
+        [attr.aria-invalid]="!!nameError()"
+        [attr.aria-describedby]="nameError() ? 'register-name-error' : null"
+      />
+      @if (nameError(); as message) {
+      <p class="field-error" id="register-name-error">
+        {{ message.key | translate: message.params }}
+      </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="register-email">{{ 'auth.email' | translate }}</label>
+      <input
+        id="register-email"
+        type="email"
+        autocomplete="email"
+        [formField]="registerForm.email"
+        [attr.aria-invalid]="!!emailError()"
+        [attr.aria-describedby]="emailError() ? 'register-email-error' : null"
+      />
+      @if (emailError(); as message) {
+      <p class="field-error" id="register-email-error">
+        {{ message.key | translate: message.params }}
+      </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="register-password">{{ 'auth.password' | translate }}</label>
+      <input
+        id="register-password"
+        type="password"
+        autocomplete="new-password"
+        [formField]="registerForm.password"
+        [attr.aria-invalid]="!!passwordError()"
+        [attr.aria-describedby]="
+          passwordError() ? 'register-password-error' : 'register-password-hint'
+        "
+      />
+      @if (passwordError(); as message) {
+      <p class="field-error" id="register-password-error">
+        {{ message.key | translate: message.params }}
+      </p>
+      } @else {
+      <p class="hint" id="register-password-hint">
+        {{ 'auth.passwordHint' | translate: { min: passwordMinLength } }}
+      </p>
+      }
+    </div>
+
+    @if (error(); as code) {
+    <p class="error" role="alert">{{ 'auth.errors.' + code | translate }}</p>
+    }
+
+    <button type="submit" [disabled]="registerForm().submitting()">
+      {{ 'auth.register.submit' | translate }}
+    </button>
+  </form>
+
+  <p class="switch">
+    {{ 'auth.register.haveAccount' | translate }}
+    <a routerLink="/login">{{ 'auth.register.login' | translate }}</a>
+  </p>
+</section>
