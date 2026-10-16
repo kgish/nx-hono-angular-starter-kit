@@ -8,6 +8,10 @@
   --danger: #cf222e;
   --toolbar-height: 3.5rem;
   --footer-height: 2.5rem;
+  // Widest the toolbar and footer contents get; past it they stay centred
+  // instead of drifting to the far edges of a large screen.
+  --bar-content-width: 72rem;
+  --bar-gutter: max(1rem, (100% - var(--bar-content-width)) / 2);
 
   @media (prefers-color-scheme: dark) {
     --bg: #0d1117;
