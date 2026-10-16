@@ -1,0 +1,8 @@
+@if (auth.user(); as user) {
+<div class="user-menu">
+  <span class="name" [title]="user.email">{{ user.name }}</span>
+  <button type="button" (click)="signOut()">
+    {{ 'auth.signOut' | translate }}
+  </button>
+</div>
+}

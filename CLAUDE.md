@@ -5,7 +5,7 @@
 - **Name:** nx-hono-angular-starter-kit — Angular frontend and Hono API on Bun sharing Zod
   schemas, backed by PostgreSQL. Workspace alias scope: `@fullstack/*`. See README.md.
 - **Angular:** 22 · TypeScript 6 strict · **Nx 23 monorepo**
-- **Backend:** Hono 4 on Bun · Drizzle ORM (`bun:sql`) · PostgreSQL 18 · Zod 4
+- **Backend:** Hono 4 on Bun · Drizzle ORM (`bun:sql`) · PostgreSQL 18 · Zod 4 · better-auth
 - **Change detection:** zoneless. It is the default since Angular 21, so `app.config.ts` has
   no `provideZonelessChangeDetection()`. There is no zone.js; never add it or
   `provideZoneChangeDetection()`.
@@ -75,7 +75,7 @@ easy to get wrong: `signal-forms.md`, `http-client.md` (`httpResource`),
 
 ```bash
 npm ci                                                      # install
-npm run db:up                                               # PostgreSQL in Docker on :5432
+npm run db:up                                               # PostgreSQL :5432 + Mailpit (inbox :8025)
 npm run dev                                                 # API on :3000 + web on :4200
 npx nx serve <project>                                      # api or web
 npx nx test <lib> -- src/lib/<file>.spec.ts                 # single file, Vitest libs — prefer this
@@ -118,6 +118,11 @@ The `angular-developer` skill does **not** state these. They are not optional he
   can swap in `InMemoryTodoRepository` (`apps/api/src/testing/`).
 - After editing `libs/api/db/src/lib/schema.ts`, run `npm run db:generate -- --name=<change>`
   and commit the generated migration. The API applies pending migrations on start.
+- Auth is better-auth (`apps/api/src/auth.ts`), mounted at `AUTH_PREFIX` (`/api/auth`). Its
+  endpoints answer errors as `{ code, message }` (`AuthErrorSchema`), not `ApiError`. Protect a
+  route with `requireSession(auth)`; tests use `createInMemoryAuth(mailer)` with an
+  `InMemoryMailer` (`apps/api/src/testing/`). Emails go through the `Mailer` interface
+  (`mailer.ts`, SMTP via nodemailer; Mailpit in dev); templates live in `emails.ts`.
 
 ## Architecture & boundaries
 
@@ -125,7 +130,8 @@ The `angular-developer` skill does **not** state these. They are not optional he
 - `libs/` — all reusable code, grouped by domain (`web`, `api`, `shared`).
 - `apps/web` — Angular shell. `app.config.ts` provides `HttpClient` (`withFetch()`) and the
   router (`withComponentInputBinding()`); `app.routes.ts` lazy-loads feature libs with
-  `loadChildren`. The dev server proxies `/api` to `localhost:3000` (`proxy.conf.json`).
+  `loadChildren`, guarded by `guestGuard` (auth pages) and `authGuard` (everything else).
+  The dev server proxies `/api` to `localhost:3000` (`proxy.conf.json`).
 - `apps/api` — Hono app on Bun: `main.ts` wires the database into `createApp()`, routes live in
   `src/routes/`, and `migrate.ts` runs migrations.
 - **State:** Angular Signals only — no NgRx or other state library. Stores are
@@ -133,7 +139,9 @@ The `angular-developer` skill does **not** state these. They are not optional he
   (see `TodoStore`).
 - **Data access:** REST over `HttpClient` with paths from `ApiPaths` (`@fullstack/util`).
   Every response is parsed with the shared Zod schemas, so contract drift fails loudly.
-  No auth yet.
+  Auth is a better-auth session cookie: `AuthStore` (`@fullstack/web/data-access`) holds the
+  user. `languageInterceptor` (`@fullstack/web/i18n`) sends the UI language to the API as
+  `Accept-Language`, which picks the language of emails.
 
 ### Library structure
 
@@ -144,19 +152,24 @@ apps/
 libs/
   shared/
     schemas/        — @fullstack/schemas: Zod schemas + inferred types      scope:shared type:schemas
-                      (TodoSchema, CreateTodoSchema, ApiErrorSchema, …)
+                      (TodoSchema, SignInSchema, SignUpSchema, ApiErrorSchema, …)
     util/           — @fullstack/util: framework-free helpers               scope:shared type:util
-                      (ApiPaths, API_PREFIX, Result)
+                      (ApiPaths, API_PREFIX, AUTH_PREFIX, Result)
   api/
-    db/             — @fullstack/api/db: Drizzle schema, client,            scope:api    type:data-access
-                      TodoRepository, migrations/
+    db/             — @fullstack/api/db: Drizzle schema (incl. better-auth  scope:api    type:data-access
+                      tables), client, TodoRepository, migrations/
   web/
-    data-access/    — @fullstack/web/data-access: TodoApi (HttpClient)      scope:web    type:data-access
-                      + TodoStore (signal state)
+    data-access/    — @fullstack/web/data-access: TodoApi, AuthApi          scope:web    type:data-access
+                      (HttpClient) + TodoStore, AuthStore (signal state),
+                      authGuard / guestGuard
+    feature-auth/   — @fullstack/web/feature-auth: authRoutes (lazy)        scope:web    type:feature
+                      + LoginPage, RegisterPage, ForgotPasswordPage,
+                      ResetPasswordPage
     feature-todos/  — @fullstack/web/feature-todos: todosRoutes (lazy)      scope:web    type:feature
                       + TodosPage
     i18n/           — @fullstack/web/i18n: LanguageStore (ngx-translate,    scope:web    type:data-access
-                      localStorage); strings in apps/web/public/i18n/
+                      localStorage), languageInterceptor; strings in
+                      apps/web/public/i18n/
 ```
 
 ### Dependency rules

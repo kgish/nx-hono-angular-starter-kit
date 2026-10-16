@@ -33,7 +33,9 @@ body {
   color: var(--fg);
 }
 
-input[type='text'] {
+input[type='text'],
+input[type='email'],
+input[type='password'] {
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;

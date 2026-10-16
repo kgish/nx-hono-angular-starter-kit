@@ -8,9 +8,10 @@ import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { translate } from '@ngx-translate/core';
 import { LanguageSwitcher } from './language-switcher';
+import { UserMenu } from './user-menu';
 
 @Component({
-  imports: [RouterOutlet, LanguageSwitcher],
+  imports: [RouterOutlet, LanguageSwitcher, UserMenu],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

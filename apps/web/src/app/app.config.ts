@@ -1,4 +1,8 @@
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
@@ -6,7 +10,11 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { DEFAULT_LANGUAGE, LanguageStore } from '@fullstack/web/i18n';
+import {
+  DEFAULT_LANGUAGE,
+  languageInterceptor,
+  LanguageStore,
+} from '@fullstack/web/i18n';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { appRoutes } from './app.routes';
@@ -14,7 +22,7 @@ import { appRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptors([languageInterceptor])),
     provideRouter(appRoutes, withComponentInputBinding()),
     // Translations are served from apps/web/public/i18n/<lang>.json.
     provideTranslateService({

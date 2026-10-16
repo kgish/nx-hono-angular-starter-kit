@@ -60,6 +60,12 @@ jobs:
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
+      # Receives the password-reset email; the API's default SMTP_URL points here.
+      mailpit:
+        image: axllent/mailpit:v1.31.6
+        ports:
+          - 1025:1025
+          - 8025:8025
     env:
       DATABASE_URL: postgres://app:app@localhost:5432/app
     steps:
@@ -82,11 +88,32 @@ jobs:
           MIGRATIONS_DIR=dist/apps/api/migrations bun dist/apps/api/main.js &
           for i in $(seq 1 30); do curl -sf localhost:3000/api/health && break; sleep 1; done
 
-      - name: Smoke test CRUD
+      - name: Smoke test auth and CRUD
         run: |
           set -euo pipefail
-          id=$(curl -sf -X POST localhost:3000/api/todos -H 'content-type: application/json' -d '{"title":"ci"}' | jq -r .id)
-          curl -sf -X PATCH localhost:3000/api/todos/$id -H 'content-type: application/json' -d '{"completed":true}' | jq -e '.completed == true'
-          curl -sf localhost:3000/api/todos | jq -e 'length == 1'
-          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:3000/api/todos -H 'content-type: application/json' -d '{"title":""}')" = 400
-          test "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE localhost:3000/api/todos/$id)" = 204
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/api/todos)" = 401
+          # The API seeds the demo user outside production.
+          curl -sf -c jar -X POST localhost:3000/api/auth/sign-in/email -H 'content-type: application/json' -d '{"email":"demo@example.org","password":"demo"}' | jq -e '.user.email == "demo@example.org"'
+          curl -sf -b jar localhost:3000/api/auth/get-session | jq -e '.user.name == "Demo User"'
+          id=$(curl -sf -b jar -X POST localhost:3000/api/todos -H 'content-type: application/json' -d '{"title":"ci"}' | jq -r .id)
+          curl -sf -b jar -X PATCH localhost:3000/api/todos/$id -H 'content-type: application/json' -d '{"completed":true}' | jq -e '.completed == true'
+          curl -sf -b jar localhost:3000/api/todos | jq -e 'length == 1'
+          test "$(curl -s -b jar -o /dev/null -w '%{http_code}' -X POST localhost:3000/api/todos -H 'content-type: application/json' -d '{"title":""}')" = 400
+          test "$(curl -s -b jar -o /dev/null -w '%{http_code}' -X DELETE localhost:3000/api/todos/$id)" = 204
+
+      - name: Smoke test password reset
+        run: |
+          set -euo pipefail
+          curl -sf -X POST localhost:3000/api/auth/request-password-reset -H 'content-type: application/json' -H 'accept-language: nl' -d '{"email":"demo@example.org","redirectTo":"/reset-password"}' | jq -e '.status == true'
+          # The API sends after answering; wait for Mailpit to receive the email.
+          for i in $(seq 1 20); do curl -sf localhost:8025/api/v1/messages | jq -e '.total > 0' >/dev/null && break; sleep 0.5; done
+          message=$(curl -sf localhost:8025/api/v1/message/latest)
+          echo "$message" | jq -e '.Subject == "Stel je wachtwoord voor Taken opnieuw in"'
+          # SMTP delivers CRLF line endings, so stop the link at any whitespace.
+          link=$(echo "$message" | jq -r .Text | grep -o 'http://[^[:space:]]*/reset-password/[^[:space:]]*')
+          # The emailed link checks the token and redirects to the web page with it.
+          location=$(curl -s -o /dev/null -w '%{redirect_url}' "$link")
+          token=${location##*token=}
+          curl -sf -X POST localhost:3000/api/auth/reset-password -H 'content-type: application/json' -d "{\"newPassword\":\"ci-new-password\",\"token\":\"$token\"}" | jq -e '.status == true'
+          curl -sf -X POST localhost:3000/api/auth/sign-in/email -H 'content-type: application/json' -d '{"email":"demo@example.org","password":"ci-new-password"}' | jq -e '.user.email == "demo@example.org"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:3000/api/auth/sign-in/email -H 'content-type: application/json' -d '{"email":"demo@example.org","password":"demo"}')" = 401

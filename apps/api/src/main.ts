@@ -1,11 +1,16 @@
 import {
+  authSchema,
   createDb,
   DrizzleTodoRepository,
   runMigrations,
 } from '@fullstack/api/db';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sql } from 'drizzle-orm';
 import { createApp } from './app';
+import { createAuth } from './auth';
+import { DEMO_USER, seedDemoUser } from './demo-user';
 import { loadEnv } from './env';
+import { createSmtpMailer } from './mailer';
 
 const env = loadEnv();
 const db = createDb(env.DATABASE_URL);
@@ -15,8 +20,25 @@ if (env.RUN_MIGRATIONS) {
   console.log('Database migrations applied');
 }
 
+const auth = createAuth({
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    schema: authSchema,
+    usePlural: true,
+  }),
+  secret: env.BETTER_AUTH_SECRET,
+  mailer: createSmtpMailer(env.SMTP_URL, env.MAIL_FROM),
+  baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: env.CORS_ORIGIN?.split(','),
+});
+
+if (env.SEED_DEMO_USER && (await seedDemoUser(auth))) {
+  console.log(`Demo user ${DEMO_USER.email} created`);
+}
+
 const app = createApp({
   todos: new DrizzleTodoRepository(db),
+  auth,
   pingDatabase: async () => {
     await db.execute(sql`select 1`);
     return true;

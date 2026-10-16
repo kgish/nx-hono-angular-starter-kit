@@ -8,6 +8,7 @@ backed by PostgreSQL and deployed as Docker containers with GitHub Actions.
 | Monorepo | Nx 23, single npm lockfile, TypeScript 6, ESLint module boundaries  |
 | Frontend | Angular 22 (standalone, zoneless, signals), Vitest                  |
 | Backend  | Hono 4 on Bun, Drizzle ORM (`bun:sql` driver), Zod 4, `bun test`    |
+| Auth     | better-auth: email/password, session cookie, Drizzle adapter        |
 | Shared   | `@fullstack/schemas` (Zod contracts), `@fullstack/util` (API paths) |
 | Database | PostgreSQL 18, Drizzle Kit migrations                               |
 | Delivery | Multi-stage Dockerfiles, Docker Compose, GHCR, SSH deploy           |
@@ -22,7 +23,9 @@ libs/
   shared/schemas/      Zod schemas + inferred types used by both sides (scope:shared)
   shared/util/         Framework-free helpers such as ApiPaths (scope:shared)
   api/db/              Drizzle schema, client, repository, migrations (scope:api)
-  web/data-access/     TodoApi (HttpClient) + signal-based TodoStore (scope:web)
+  web/data-access/     TodoApi/AuthApi (HttpClient), signal-based TodoStore/AuthStore,
+                       authGuard/guestGuard (scope:web)
+  web/feature-auth/    Lazy-loaded login, register and forgot-password pages (scope:web)
   web/feature-todos/   Lazy-loaded todos page (scope:web)
   web/i18n/            LanguageStore: active UI language via ngx-translate (scope:web)
 deploy/                Production compose file and server .env example
@@ -40,6 +43,41 @@ scope plus `scope:shared`, and shared libraries cannot import anything framework
   shared `ApiError` shape on failure.
 - The Angular form validates input with the same schema before calling the API.
 - `TodoApi` parses every response with them, so a contract drift fails loudly in the client.
+
+### Authentication
+
+The API mounts [better-auth](https://www.better-auth.com) at `/api/auth` (`apps/api/src/auth.ts`)
+with email and password sign-in. Users, sessions and accounts live in PostgreSQL
+(`users`, `sessions`, `accounts`, `verifications` in `libs/api/db`); the session is an
+HttpOnly cookie, so the web app keeps no tokens. `/api/todos` answers `401` without a session
+(`requireSession`). The todos are still shared by all users.
+
+- **Demo user:** outside production the API creates `demo@example.org` with the password `demo`
+  on start (`SEED_DEMO_USER`). Its password is shorter than the 8 characters registration
+  requires, so it is seeded server-side rather than through sign-up.
+- **Web:** `/login`, `/register`, `/forgot-password` and `/reset-password`
+  (`@fullstack/web/feature-auth`), built with Signal Forms that validate with the shared schemas
+  (`SignInSchema`, `SignUpSchema`, `PasswordSchema`, …); the API checks those request bodies
+  against the same schemas. `authGuard` sends visitors without a session to `/login`.
+- **Password reset:** `/forgot-password` asks the API to email a link (`apps/api/src/emails.ts`)
+  in the UI language, which the web app sends as `Accept-Language` (`languageInterceptor`). The
+  link is valid once, for an hour; it opens better-auth's token check, which redirects to
+  `/reset-password?token=…`. Saving a new password signs out every session. The API answers the
+  same for unknown addresses and sends the email after responding, so neither the answer nor its
+  timing tells whether an account exists.
+- **Email** goes out over SMTP (`nodemailer`, `apps/api/src/mailer.ts`). In development that is
+  [Mailpit](https://mailpit.axllent.org) from `npm run db:up`: it catches every email, readable at
+  http://localhost:8025.
+- The better-auth endpoints answer errors with better-auth's own `{ code, message }` body
+  (`AuthErrorSchema`), not `ApiError`.
+
+| Variable             | Default                                             | Purpose                                                              |
+| -------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET` | development secret; required in prod                | Signs session cookies; at least 32 characters                        |
+| `BETTER_AUTH_URL`    | inferred from each request                          | Public URL of the web app; better-auth only accepts sign-ins from it |
+| `SEED_DEMO_USER`     | `true`, or `false` when `NODE_ENV=production`       | Creates the demo user on start                                       |
+| `SMTP_URL`           | `smtp://localhost:1025` (Mailpit); required in prod | SMTP server for emails, e.g. `smtps://user:password@host:465`        |
+| `MAIL_FROM`          | `Todos <no-reply@localhost>`; required in prod      | Sender of the emails                                                 |
 
 ### Translations
 
@@ -66,11 +104,12 @@ cp .env.example .env          # Bun loads .env automatically
 Then start everything the app needs, from the repository root:
 
 ```sh
-npm run db:up                 # PostgreSQL in Docker on localhost:5432
+npm run db:up                 # PostgreSQL on localhost:5432, Mailpit on :1025 / :8025
 npm run dev                   # API on :3000 (migrates on start), web on :4200
 ```
 
-Open http://localhost:4200. The Angular dev server proxies `/api` to `localhost:3000`
+Open http://localhost:4200 and sign in as `demo@example.org` / `demo`, or create an account.
+The Angular dev server proxies `/api` to `localhost:3000`
 (`apps/web/proxy.conf.json`), and both servers reload when files change.
 
 To stop, press Ctrl+C in the `npm run dev` terminal (stops the API and web servers) and run
@@ -128,7 +167,9 @@ docker compose down           # stop; add -v to also delete the database volume
 ```
 
 This is closer to production but doesn't reload on code changes, so use `npm run dev` for
-day-to-day work. The database still publishes port 5432 (see
+day-to-day work. `compose.yaml` creates the demo user and sets `BETTER_AUTH_URL` to
+`http://localhost:8080`, so open that exact address (not `127.0.0.1`) to sign in. Emails go to
+the Mailpit container, at http://localhost:8025. The database still publishes port 5432 (see
 [Troubleshooting](#troubleshooting)).
 
 - `apps/api/Dockerfile`: installs production deps with npm, bundles `main.ts` and
@@ -140,7 +181,8 @@ day-to-day work. The database still publishes port 5432 (see
 
 - **`ci.yml`** (pull requests, and called by deployment): `nx format:check`, then
   `nx affected -t lint test typecheck build`, plus a job that runs the bundled API against a
-  PostgreSQL service container and smoke-tests the CRUD endpoints.
+  PostgreSQL and a Mailpit service container, signs in as the demo user, smoke-tests the CRUD
+  endpoints and resets the demo password through the emailed link.
 - **`deploy.yml`** (push to `main` or manual): runs CI, builds and pushes
   `ghcr.io/<owner>/<repo>-api` and `-web` tagged with the commit SHA and `latest`, then
   SSHes to the server, uploads `deploy/compose.prod.yaml` and runs
@@ -151,7 +193,9 @@ day-to-day work. The database still publishes port 5432 (see
 1. Install Docker Engine with the Compose plugin on the server and create a deployment user that
    can run `docker`.
 2. Create the deployment directory (default `/opt/fullstack`) and copy `deploy/.env.example`
-   to `.env` there with a real `POSTGRES_PASSWORD`.
+   to `.env` there with a real `POSTGRES_PASSWORD`, a random `BETTER_AUTH_SECRET`
+   (`openssl rand -base64 32`), `BETTER_AUTH_URL` set to the public URL of the app, and the
+   `SMTP_URL` and `MAIL_FROM` of your email provider.
 3. In the GitHub repository settings, add an environment named `production` and configure:
 
    | Kind     | Name              | Value                                         |

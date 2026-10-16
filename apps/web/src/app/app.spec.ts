@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
@@ -8,16 +10,19 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideRouter([]),
         provideTranslateService({ lang: 'en', fallbackLang: 'en' }),
       ],
     }).compileComponents();
   });
 
-  it('renders the language switcher and the router outlet', async () => {
+  it('renders the header and the router outlet', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('header app-user-menu')).toBeTruthy();
     expect(el.querySelector('header app-language-switcher')).toBeTruthy();
     expect(el.querySelector('router-outlet')).toBeTruthy();
   });
