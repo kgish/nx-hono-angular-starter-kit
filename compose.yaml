@@ -27,6 +27,9 @@ services:
       # Local stack only: a fixed secret and the demo user (demo@example.org / demo).
       BETTER_AUTH_SECRET: local-docker-better-auth-secret-not-for-production
       BETTER_AUTH_URL: http://localhost:8080
+      # Its own session cookie, so signing in here does not sign out `npm run dev`
+      # on :4200: browsers share cookies across ports.
+      BETTER_AUTH_COOKIE_PREFIX: todos-docker
       SEED_DEMO_USER: 'true'
       SMTP_URL: smtp://mailpit:1025
       MAIL_FROM: Todos <no-reply@localhost>

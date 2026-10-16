@@ -204,6 +204,20 @@ describe('API', () => {
       ).toBe(401);
     });
 
+    it('names the session cookie with the configured prefix', async () => {
+      app = createApp({
+        todos: new InMemoryTodoRepository(),
+        auth: createInMemoryAuth(mailer, { cookiePrefix: 'todos-docker' }),
+        pingDatabase: async () => true,
+        log: false,
+      });
+      const session = await signUp();
+      expect(session.Cookie).toStartWith('todos-docker.session_token=');
+      expect(
+        (await app.request(ApiPaths.todos, { headers: session })).status,
+      ).toBe(200);
+    });
+
     it('signs in with the password chosen at sign-up', async () => {
       await signUp();
       const res = await app.request(
