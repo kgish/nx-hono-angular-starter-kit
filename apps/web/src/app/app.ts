@@ -7,14 +7,12 @@ import {
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { translate } from '@ngx-translate/core';
-import { LanguageSwitcher } from './language-switcher';
-import { UserMenu } from './user-menu';
+import { Toolbar } from './toolbar';
 
 @Component({
-  imports: [RouterOutlet, LanguageSwitcher, UserMenu],
+  imports: [RouterOutlet, Toolbar],
   selector: 'app-root',
   templateUrl: './app.html',
-  styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {

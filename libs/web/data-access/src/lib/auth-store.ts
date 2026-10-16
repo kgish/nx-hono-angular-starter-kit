@@ -34,11 +34,18 @@ export class AuthStore {
   private readonly api = inject(AuthApi);
   private readonly pendingTasks = inject(PendingTasks);
 
-  private readonly state = signal<{ user: AuthUser | null }>({ user: null });
+  // `known` stays false until the API has said who is signed in; before that
+  // `user` is null whether or not there is a session.
+  private readonly state = signal<{ user: AuthUser | null; known: boolean }>({
+    user: null,
+    known: false,
+  });
   private sessionLoad: Promise<void> | undefined;
 
   readonly user = computed(() => this.state().user);
   readonly isAuthenticated = computed(() => this.user() !== null);
+  /** Known to have no session. False while the session is still loading. */
+  readonly isGuest = computed(() => this.state().known && this.user() === null);
 
   /**
    * Asks the API who is signed in, once. Later calls wait for that same answer;
@@ -84,7 +91,7 @@ export class AuthStore {
   }
 
   private setUser(user: AuthUser | null): void {
-    this.state.set({ user });
+    this.state.set({ user, known: true });
     // A known answer needs no session request any more.
     this.sessionLoad = Promise.resolve();
   }

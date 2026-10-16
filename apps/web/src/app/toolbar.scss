@@ -1,0 +1,51 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: block;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  height: var(--toolbar-height);
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.start,
+.end {
+  display: flex;
+  align-items: center;
+}
+
+.start {
+  // Let a long title shrink on narrow screens instead of pushing the
+  // account and language controls off the bar.
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+.end {
+  flex-shrink: 0;
+  gap: 1rem;
+}
+
+.title {
+  overflow: hidden;
+  border-radius: 4px;
+  color: var(--fg);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}

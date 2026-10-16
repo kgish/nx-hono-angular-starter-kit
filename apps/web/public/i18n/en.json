@@ -3,6 +3,12 @@
     "title": "Todos",
     "language": "Language"
   },
+  "nav": {
+    "menu": "Menu",
+    "label": "Main",
+    "todos": "Todos",
+    "register": "Create account"
+  },
   "todos": {
     "heading": "Todos",
     "summary": "{{remaining}} of {{total}} remaining",
@@ -24,6 +30,7 @@
     "email": "Email",
     "password": "Password",
     "passwordHint": "At least {{min}} characters",
+    "signIn": "Sign in",
     "signOut": "Sign out",
     "login": {
       "heading": "Sign in",

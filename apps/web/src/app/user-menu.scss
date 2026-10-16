@@ -9,7 +9,8 @@
   font-size: 0.875rem;
 }
 
-button {
+button,
+.sign-in {
   padding: 0.3rem 0.6rem;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -17,6 +18,7 @@ button {
   color: var(--fg);
   font: inherit;
   font-size: 0.875rem;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {

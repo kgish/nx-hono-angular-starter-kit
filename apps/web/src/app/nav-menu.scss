@@ -1,0 +1,83 @@
+.toggle {
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    border-color: var(--border);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.drawer {
+  position: fixed;
+  top: var(--toolbar-height);
+  bottom: 0;
+  left: 0;
+  width: min(16rem, 80vw);
+  padding: 0.5rem;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  transform: translateX(-100%);
+  // Hidden, not just moved off-screen, so the closed drawer's links are out
+  // of the tab order and the accessibility tree.
+  visibility: hidden;
+  transition:
+    transform 0.2s ease,
+    visibility 0.2s;
+
+  &.open {
+    transform: none;
+    visibility: visible;
+    box-shadow: 4px 0 12px rgb(0 0 0 / 0.12);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  color: var(--fg);
+  text-decoration: none;
+
+  &:hover {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  &.active {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}

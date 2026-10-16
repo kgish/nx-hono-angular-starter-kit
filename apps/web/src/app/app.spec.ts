@@ -18,12 +18,11 @@ describe('App', () => {
     }).compileComponents();
   });
 
-  it('renders the header and the router outlet', async () => {
+  it('renders the toolbar and the router outlet', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('header app-user-menu')).toBeTruthy();
-    expect(el.querySelector('header app-language-switcher')).toBeTruthy();
+    expect(el.querySelector('app-toolbar')).toBeTruthy();
     expect(el.querySelector('router-outlet')).toBeTruthy();
   });
 

@@ -50,9 +50,11 @@ describe('AuthStore', () => {
 
   it('is anonymous without a session', async () => {
     const done = store.loadSession();
+    expect(store.isGuest()).toBe(false);
     http.expectOne(ApiPaths.session).flush(null);
     await done;
     expect(store.isAuthenticated()).toBe(false);
+    expect(store.isGuest()).toBe(true);
   });
 
   it('asks again after the session request failed', async () => {
@@ -61,6 +63,8 @@ describe('AuthStore', () => {
       .expectOne(ApiPaths.session)
       .error(new ProgressEvent('error'), { status: 0 });
     await failed;
+    // Without an answer the visitor may still have a session.
+    expect(store.isGuest()).toBe(false);
 
     const retry = store.loadSession();
     http.expectOne(ApiPaths.session).flush(session);
@@ -80,6 +84,7 @@ describe('AuthStore', () => {
     http.expectOne(ApiPaths.signOut).flush({ success: true });
     await signOut;
     expect(store.isAuthenticated()).toBe(false);
+    expect(store.isGuest()).toBe(true);
   });
 
   it('reports wrong credentials as a code', async () => {

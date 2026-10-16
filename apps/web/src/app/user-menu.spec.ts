@@ -28,13 +28,13 @@ describe('UserMenu', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([]),
+        provideRouter([{ path: '**', children: [] }]),
         provideTranslateService({ lang: 'en', fallbackLang: 'en' }),
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     TestBed.inject(TranslateService).setTranslation('en', {
-      auth: { signOut: 'Sign out' },
+      auth: { signIn: 'Sign in', signOut: 'Sign out' },
     });
   });
 
@@ -48,10 +48,35 @@ describe('UserMenu', () => {
     await loaded;
   };
 
-  it('is empty when signed out', async () => {
+  const signedOut = async () => {
+    const loaded = TestBed.inject(AuthStore).loadSession();
+    http.expectOne(ApiPaths.session).flush(null);
+    await loaded;
+  };
+
+  it('is empty while the session is unknown', async () => {
     const fixture = TestBed.createComponent(UserMenu);
     await fixture.whenStable();
     expect((fixture.nativeElement as HTMLElement).textContent?.trim()).toBe('');
+  });
+
+  it('links to the login page when signed out', async () => {
+    await signedOut();
+    const fixture = TestBed.createComponent(UserMenu);
+    await fixture.whenStable();
+    const link = (fixture.nativeElement as HTMLElement).querySelector('a');
+    expect(link?.textContent?.trim()).toBe('Sign in');
+    expect(link?.getAttribute('href')).toBe('/login');
+  });
+
+  it('leaves the sign-in link out on the login page', async () => {
+    await signedOut();
+    await TestBed.inject(Router).navigateByUrl('/login');
+    const fixture = TestBed.createComponent(UserMenu);
+    await fixture.whenStable();
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('a'),
+    ).toBeNull();
   });
 
   it('shows the user and signs out to the login page', async () => {
@@ -70,5 +95,6 @@ describe('UserMenu', () => {
 
     expect(navigate).toHaveBeenCalledWith('/login');
     expect(el.querySelector('.name')).toBeNull();
+    expect(el.querySelector('a.sign-in')).toBeTruthy();
   });
 });

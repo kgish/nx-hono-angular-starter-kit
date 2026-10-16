@@ -5,4 +5,6 @@
     {{ 'auth.signOut' | translate }}
   </button>
 </div>
+} @else if (auth.isGuest() && !onLoginPage()) {
+<a class="sign-in" [routerLink]="loginPath">{{ 'auth.signIn' | translate }}</a>
 }

@@ -1,0 +1,35 @@
+<button
+  #toggleButton
+  type="button"
+  class="toggle"
+  aria-controls="app-nav"
+  [attr.aria-expanded]="open()"
+  [attr.aria-label]="'nav.menu' | translate"
+  (click)="toggle()"
+>
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>
+<nav
+  id="app-nav"
+  class="drawer"
+  [class.open]="open()"
+  [attr.aria-label]="'nav.label' | translate"
+>
+  <ul>
+    @for (link of links(); track link.path) {
+    <li>
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        (click)="close()"
+      >
+        {{ link.label | translate }}
+      </a>
+    </li>
+    }
+  </ul>
+</nav>

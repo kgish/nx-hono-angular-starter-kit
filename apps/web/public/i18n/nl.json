@@ -3,6 +3,12 @@
     "title": "Taken",
     "language": "Taal"
   },
+  "nav": {
+    "menu": "Menu",
+    "label": "Hoofdmenu",
+    "todos": "Taken",
+    "register": "Account aanmaken"
+  },
   "todos": {
     "heading": "Taken",
     "summary": "{{remaining}} van {{total}} nog te doen",
@@ -24,6 +30,7 @@
     "email": "E-mailadres",
     "password": "Wachtwoord",
     "passwordHint": "Minimaal {{min}} tekens",
+    "signIn": "Inloggen",
     "signOut": "Uitloggen",
     "login": {
       "heading": "Inloggen",
