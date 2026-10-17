@@ -13,18 +13,10 @@
     "sharedGlobals": []
   },
   "plugins": [
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
     {
       "plugin": "@nx/vitest",
-      "options": {
-        "testTargetName": "test",
-        "ciTargetName": "test-ci"
-      }
+      "options": { "testTargetName": "test", "ciTargetName": "test-ci" }
     }
   ],
   "targetDefaults": {
@@ -65,10 +57,8 @@
       "linter": "eslint",
       "unitTestRunner": "vitest-analog"
     },
-    "@nx/angular:component": {
-      "style": "scss",
-      "changeDetection": "OnPush"
-    }
+    "@nx/angular:component": { "style": "scss", "changeDetection": "OnPush" }
   },
-  "analytics": false
+  "analytics": false,
+  "nxCloudId": "6ad36fd1585cf7747914e5a8"
 }
