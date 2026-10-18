@@ -34,7 +34,7 @@
   width: min(16rem, 80vw);
   padding: 0.5rem;
   border-right: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
   transform: translateX(-100%);
   // Hidden, not just moved off-screen, so the closed drawer's links are out
   // of the tab order and the accessibility tree.
