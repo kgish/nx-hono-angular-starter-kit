@@ -6,7 +6,7 @@
   schemas, backed by PostgreSQL. Workspace alias scope: `@fullstack/*`. See README.md.
 - **Angular:** 22 · TypeScript 6 strict · **Nx 23 monorepo**
 - **Backend:** Hono 4 on Bun · Drizzle ORM (`bun:sql`) · PostgreSQL 18 · Zod 4 · better-auth
-- **Change detection:** zoneless. It is the default since Angular 21, so `app.config.ts` has
+- **Change detection:** zoneless. It’s been the default since Angular 21, so `app.config.ts` has
   no `provideZonelessChangeDetection()`. There is no zone.js; never add it or
   `provideZoneChangeDetection()`.
 - **Package manager:** npm — always prefix: `npx nx <command>`
@@ -129,8 +129,8 @@ The `angular-developer` skill does **not** state these. They are not optional he
 - Always `@if` / `@for` (with `track`) / `@switch`.
   Never `*ngIf` / `*ngFor` / `*ngSwitch`.
 - Never write `standalone: true`. Never create an `NgModule`.
-- `@defer` is not general control flow. Use it only for heavy, below-the-fold
-  blocks, and only when I ask. Do not add it on your own.
+- `@defer` is not a general control flow. Use it only for heavy, below-the-fold
+  blocks and only when I ask. Do not add it on your own.
 - RxJS lives only in data-access libraries. Convert to signals before the
   template. Never subscribe manually inside a component.
 - Self-closing tags for components with no projected content: `<app-profile />`.
@@ -264,7 +264,7 @@ Both:
 ## General Guidelines for working with Nx
 
 - For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
-- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- When running tasks (for example, build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
 - Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
 - You have access to the Nx MCP server and its tools, use them to help the user
 - For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
