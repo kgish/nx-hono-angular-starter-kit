@@ -1,8 +1,7 @@
-name: Deploy
+name: Deploy manual
 
+# Runs only when started by hand from the Actions tab ("Run workflow").
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:

@@ -182,11 +182,12 @@ the Mailpit container, at http://localhost:8025. The database still publishes po
 
 ## CI/CD
 
-- **`ci.yml`** (pull requests, and called by deployment): `nx format:check`, then
+- **`ci.yml`** (pull requests, pushes to `main`, and called by deployment): `nx format:check`, then
   `nx affected -t lint test typecheck build`, plus a job that runs the bundled API against a
   PostgreSQL and a Mailpit service container, signs in as the demo user, smoke-tests the CRUD
   endpoints and resets the demo password through the emailed link.
-- **`deploy.yml`** (push to `main` or manual): runs CI, builds and pushes
+- **`deploy.yml`** ("Deploy manual"; only started by hand with **Run workflow** on the
+  Actions tab): runs CI, builds and pushes
   `ghcr.io/<owner>/<repo>-api` and `-web` tagged with the commit SHA and `latest`, then
   SSHes to the server, uploads `deploy/compose.prod.yaml` and runs
   `docker compose pull && docker compose up -d --wait`.
