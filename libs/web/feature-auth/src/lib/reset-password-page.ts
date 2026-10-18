@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import {
   form,
   FormField,
@@ -32,7 +25,6 @@ import { fieldMessage } from './field-message';
   imports: [FormField, RouterLink, TranslatePipe],
   templateUrl: './reset-password-page.html',
   styleUrl: './auth-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordPage {
   private readonly auth = inject(AuthStore);

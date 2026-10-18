@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  isDevMode,
-  VERSION,
-} from '@angular/core';
+import { Component, effect, inject, isDevMode, VERSION } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { LanguageStore } from '@fullstack/web/i18n';
@@ -23,7 +16,6 @@ import { Toolbar } from './toolbar';
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   private readonly title = inject(Title);

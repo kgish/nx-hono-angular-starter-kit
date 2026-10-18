@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { isActive, Router, RouterLink } from '@angular/router';
 import { AuthStore, LOGIN_PATH } from '@fullstack/web/data-access';
 import { Notifier } from '@fullstack/web/notifications';
@@ -14,7 +14,6 @@ import { TranslatePipe } from '@ngx-translate/core';
   imports: [RouterLink, TranslatePipe],
   templateUrl: './user-menu.html',
   styleUrl: './user-menu.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserMenu {
   protected readonly auth = inject(AuthStore);

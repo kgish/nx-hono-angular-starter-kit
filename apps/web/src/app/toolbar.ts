@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LanguageSwitcher } from './language-switcher';
 import { NavMenu } from './nav-menu';
@@ -10,6 +10,5 @@ import { UserMenu } from './user-menu';
   imports: [RouterLink, NavMenu, UserMenu, LanguageSwitcher],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Toolbar {}

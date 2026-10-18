@@ -66,8 +66,7 @@
       "unitTestRunner": "vitest-analog"
     },
     "@nx/angular:component": {
-      "style": "scss",
-      "changeDetection": "OnPush"
+      "style": "scss"
     }
   },
   "analytics": false

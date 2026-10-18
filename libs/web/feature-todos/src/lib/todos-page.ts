@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CreateTodoSchema } from '@fullstack/schemas';
 import { TodoStore } from '@fullstack/web/data-access';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +8,6 @@ import { TranslatePipe } from '@ngx-translate/core';
   imports: [TranslatePipe],
   templateUrl: './todos-page.html',
   styleUrl: './todos-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodosPage implements OnInit {
   protected readonly store = inject(TodoStore);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import {
   MAT_SNACK_BAR_DATA,
@@ -31,7 +31,6 @@ export interface NotificationData {
   ],
   templateUrl: './notification.html',
   styleUrl: './notification.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Notification {
   private readonly ref = inject<MatSnackBarRef<Notification>>(MatSnackBarRef);

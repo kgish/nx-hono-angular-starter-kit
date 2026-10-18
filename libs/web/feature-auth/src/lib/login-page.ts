@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import {
   form,
   FormField,
@@ -24,7 +17,6 @@ import { fieldMessage } from './field-message';
   imports: [FormField, RouterLink, TranslatePipe],
   templateUrl: './login-page.html',
   styleUrl: './auth-page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {
   private readonly auth = inject(AuthStore);

@@ -120,7 +120,8 @@ can break its consumers, so testing only the project you touched is not enough.
 
 The `angular-developer` skill does **not** state these. They are not optional here.
 
-- Always `changeDetection: ChangeDetectionStrategy.OnPush`.
+- Never write `changeDetection: ChangeDetectionStrategy.OnPush`. OnPush is the default
+  since Angular 22. Do not opt out with `ChangeDetectionStrategy.Eager` either.
 - Always `inject()`. Never constructor injection.
 - Always `input()` / `input.required()` / `output()` / `model()`.
   Never `@Input()` / `@Output()`.

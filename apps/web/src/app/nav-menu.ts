@@ -26,7 +26,7 @@ const GUEST_LINKS: readonly NavLink[] = [
 
 /**
  * The hamburger button and the navigation drawer it opens. The drawer lists
- * the pages open to the current visitor, and closes on a link, Escape or a
+ * the pages open to the current visitor and closes on a link, Escape, or a
  * click outside it.
  */
 @Component({
