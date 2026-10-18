@@ -169,6 +169,8 @@ The `angular-developer` skill does **not** state these. They are not optional he
   Auth is a better-auth session cookie: `AuthStore` (`@fullstack/web/data-access`) holds the
   user. `languageInterceptor` (`@fullstack/web/i18n`) sends the UI language to the API as
   `Accept-Language`, which picks the language of emails.
+- **Logging (web):** inject `Logger` (`@fullstack/web/logging`) instead of calling `console.*`.
+  Provide `LOG_LEVEL` to change which levels are written.
 
 ### Library structure
 
@@ -199,6 +201,8 @@ libs/
                       apps/web/public/i18n/
     notifications/  — @fullstack/web/notifications: Notifier (Material      scope:web    type:data-access
                       snackbar: success/failure/info, close button)
+    logging/        — @fullstack/web/logging: Logger (console, filtered by  scope:web    type:data-access
+                      LOG_LEVEL: debug in dev mode, info in production)
 ```
 
 ### Dependency rules

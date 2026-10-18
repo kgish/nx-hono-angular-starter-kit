@@ -25,7 +25,8 @@
       "@fullstack/web/feature-todos": ["./libs/web/feature-todos/src/index.ts"],
       "@fullstack/web/i18n": ["./libs/web/i18n/src/index.ts"],
       "@fullstack/web/feature-auth": ["./libs/web/feature-auth/src/index.ts"],
-      "@fullstack/web/notifications": ["./libs/web/notifications/src/index.ts"]
+      "@fullstack/web/notifications": ["./libs/web/notifications/src/index.ts"],
+      "@fullstack/web/logging": ["./libs/web/logging/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
