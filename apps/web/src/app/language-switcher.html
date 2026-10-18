@@ -9,7 +9,7 @@
     [attr.lang]="language.code"
     [title]="language.name"
     [attr.aria-pressed]="store.current() === language.code"
-    (click)="store.use(language.code)"
+    (click)="switchTo(language)"
   >
     {{ language.code | uppercase }}
   </button>

@@ -1,7 +1,8 @@
 {
   "app": {
     "title": "Todos",
-    "language": "Language"
+    "language": "Language",
+    "languageChanged": "Changed language to {{language}}"
   },
   "nav": {
     "menu": "Menu",

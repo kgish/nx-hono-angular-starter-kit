@@ -1,7 +1,8 @@
 {
   "app": {
     "title": "Taken",
-    "language": "Taal"
+    "language": "Taal",
+    "languageChanged": "Taal gewijzigd naar {{language}}"
   },
   "nav": {
     "menu": "Menu",
