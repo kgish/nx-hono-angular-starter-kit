@@ -30,26 +30,21 @@
   position: fixed;
   top: var(--toolbar-height);
   bottom: var(--footer-height);
-  // Under the menu button: the toolbar's gutter without its 1rem floor, so
-  // narrow screens keep the drawer against the edge.
-  left: max(0px, (100% - var(--bar-content-width)) / 2);
+  left: 0;
   width: min(16rem, 80vw);
   padding: 0.5rem;
-  border-inline: 1px solid var(--border);
+  border-right: 1px solid var(--border);
   background: var(--bg);
-  // Closed, it is clipped to nothing at its top edge; opening unrolls it
-  // downwards from under the toolbar instead of sliding it in sideways.
-  clip-path: inset(0 0 100% 0);
-  // Hidden, not just clipped away, so the closed drawer's links are out
+  transform: translateX(-100%);
+  // Hidden, not just moved off-screen, so the closed drawer's links are out
   // of the tab order and the accessibility tree.
   visibility: hidden;
   transition:
-    clip-path 0.2s ease,
+    transform 0.2s ease,
     visibility 0.2s;
 
   &.open {
-    // Negative insets leave room for the shadow.
-    clip-path: inset(0 -1rem -1rem -1rem);
+    transform: none;
     visibility: visible;
     box-shadow: 4px 0 12px rgb(0 0 0 / 0.12);
   }
