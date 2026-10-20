@@ -14,7 +14,10 @@ describe('Logger', () => {
         vi.spyOn(console, m).mockImplementation(() => undefined),
       ]),
     ) as Record<(typeof methods)[number], ReturnType<typeof vi.spyOn>>;
-    return { logger: TestBed.inject(Logger), spies };
+    const logger = TestBed.inject(Logger);
+    // Count only what the test writes, not the logger's own creation message.
+    for (const spy of Object.values(spies)) spy.mockClear();
+    return { logger, spies };
   };
 
   afterEach(() => vi.restoreAllMocks());
@@ -44,6 +47,16 @@ describe('Logger', () => {
         (written as readonly string[]).includes(m) ? 1 : 0,
       );
     }
+  });
+
+  it('logs its own creation at debug level', () => {
+    const debug = vi
+      .spyOn(console, 'debug')
+      .mockImplementation(() => undefined);
+
+    TestBed.inject(Logger);
+
+    expect(debug).toHaveBeenCalledWith('Logger.constructor');
   });
 
   it('writes everything in dev mode by default', () => {

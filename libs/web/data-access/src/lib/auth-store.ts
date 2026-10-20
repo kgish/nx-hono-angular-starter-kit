@@ -15,6 +15,7 @@ import {
   type SignUp,
 } from '@fullstack/schemas';
 import { err, ok, type Result } from '@fullstack/util';
+import { Logger } from '@fullstack/web/logging';
 import { firstValueFrom } from 'rxjs';
 import { AuthApi } from './auth-api';
 
@@ -31,6 +32,7 @@ export type AuthErrorCode =
 /** Signal-based state for the signed-in user. */
 @Injectable({ providedIn: 'root' })
 export class AuthStore {
+  private readonly logger = inject(Logger);
   private readonly api = inject(AuthApi);
   private readonly pendingTasks = inject(PendingTasks);
 
@@ -46,6 +48,10 @@ export class AuthStore {
   readonly isAuthenticated = computed(() => this.user() !== null);
   /** Known to have no session. False while the session is still loading. */
   readonly isGuest = computed(() => this.state().known && this.user() === null);
+
+  constructor() {
+    this.logger.debug('AuthStore.constructor');
+  }
 
   /**
    * Asks the API who is signed in, once. Later calls wait for that same answer;

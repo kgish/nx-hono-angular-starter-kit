@@ -28,6 +28,10 @@ export const LOG_LEVEL = new InjectionToken<LogLevel>('LOG_LEVEL', {
 export class Logger {
   private readonly level = inject(LOG_LEVEL);
 
+  constructor() {
+    this.debug('Logger.constructor');
+  }
+
   debug(message: string, ...data: unknown[]): void {
     this.write('debug', message, data);
   }

@@ -8,12 +8,18 @@ import {
   type UpdateTodo,
 } from '@fullstack/schemas';
 import { ApiPaths } from '@fullstack/util';
+import { Logger } from '@fullstack/web/logging';
 import { map, type Observable } from 'rxjs';
 
 /** Thin HTTP client that validates every response against the shared Zod schemas. */
 @Injectable({ providedIn: 'root' })
 export class TodoApi {
+  private readonly logger = inject(Logger);
   private readonly http = inject(HttpClient);
+
+  constructor() {
+    this.logger.debug('TodoApi.constructor');
+  }
 
   list(): Observable<Todo[]> {
     return this.http

@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Logger } from '@fullstack/web/logging';
 import {
   Notification,
   type NotificationData,
@@ -22,7 +23,12 @@ export const NOTIFICATION_DURATIONS: Readonly<
  */
 @Injectable({ providedIn: 'root' })
 export class Notifier {
+  private readonly logger = inject(Logger);
   private readonly snackBar = inject(MatSnackBar);
+
+  constructor() {
+    this.logger.debug('Notifier.constructor');
+  }
 
   success(message: string, params?: Record<string, unknown>): void {
     this.show({ type: 'success', message, params });

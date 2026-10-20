@@ -11,6 +11,7 @@ import {
   type SignUp,
 } from '@fullstack/schemas';
 import { ApiPaths } from '@fullstack/util';
+import { Logger } from '@fullstack/web/logging';
 import { map, type Observable } from 'rxjs';
 
 /** The web page the link in the reset email leads to, with `?token=…`. */
@@ -22,7 +23,12 @@ export const RESET_PASSWORD_PATH = '/reset-password';
  */
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
+  private readonly logger = inject(Logger);
   private readonly http = inject(HttpClient);
+
+  constructor() {
+    this.logger.debug('AuthApi.constructor');
+  }
 
   /** The signed-in user, or `null` without a valid session. */
   session(): Observable<AuthUser | null> {

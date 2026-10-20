@@ -7,12 +7,14 @@ import {
   signal,
 } from '@angular/core';
 import { ApiErrorSchema, type Todo, type UpdateTodo } from '@fullstack/schemas';
+import { Logger } from '@fullstack/web/logging';
 import { firstValueFrom } from 'rxjs';
 import { TodoApi } from './todo-api';
 
 /** Signal-based state for the todo list. */
 @Injectable({ providedIn: 'root' })
 export class TodoStore {
+  private readonly logger = inject(Logger);
   private readonly api = inject(TodoApi);
   private readonly pendingTasks = inject(PendingTasks);
 
@@ -32,6 +34,10 @@ export class TodoStore {
   readonly remaining = computed(
     () => this.todos().filter((todo) => !todo.completed).length,
   );
+
+  constructor() {
+    this.logger.debug('TodoStore.constructor');
+  }
 
   async load(): Promise<void> {
     // Todos are per user, and the list may still hold the previous user's

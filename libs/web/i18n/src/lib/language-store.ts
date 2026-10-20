@@ -1,4 +1,5 @@
 import { computed, DOCUMENT, inject, Injectable } from '@angular/core';
+import { Logger } from '@fullstack/web/logging';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
@@ -18,6 +19,7 @@ export const LANGUAGE_STORAGE_KEY = 'language';
 /** The active UI language, backed by ngx-translate's `TranslateService`. */
 @Injectable({ providedIn: 'root' })
 export class LanguageStore {
+  private readonly logger = inject(Logger);
   private readonly translate = inject(TranslateService);
   private readonly document = inject(DOCUMENT);
 
@@ -26,6 +28,10 @@ export class LanguageStore {
     const lang = this.translate.currentLang();
     return isLanguage(lang) ? lang : DEFAULT_LANGUAGE;
   });
+
+  constructor() {
+    this.logger.debug('LanguageStore.constructor');
+  }
 
   /**
    * Starts in the language the user last switched to, else the first supported
