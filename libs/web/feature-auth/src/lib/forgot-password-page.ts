@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import {
   form,
   FormField,
@@ -8,6 +8,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { type ForgotPassword, ForgotPasswordSchema } from '@fullstack/schemas';
 import { type AuthErrorCode, AuthStore } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fieldMessage } from './field-message';
 
@@ -18,7 +19,8 @@ import { fieldMessage } from './field-message';
   templateUrl: './forgot-password-page.html',
   styleUrl: './auth-page.scss',
 })
-export class ForgotPasswordPage {
+export class ForgotPasswordPage implements OnInit {
+  private readonly logger = inject(Logger);
   private readonly auth = inject(AuthStore);
 
   protected readonly model = signal<ForgotPassword>({ email: '' });
@@ -31,6 +33,10 @@ export class ForgotPasswordPage {
   protected readonly error = signal<AuthErrorCode | null>(null);
   /** The address the link went to, once the request is accepted. */
   protected readonly sentTo = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.logger.debug('ForgotPasswordPage.ngOnInit');
+  }
 
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();

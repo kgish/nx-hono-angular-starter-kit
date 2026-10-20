@@ -1,4 +1,11 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   form,
   FormField,
@@ -16,6 +23,7 @@ import {
   AuthStore,
   LOGIN_PATH,
 } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fieldMessage } from './field-message';
 
@@ -26,7 +34,8 @@ import { fieldMessage } from './field-message';
   templateUrl: './reset-password-page.html',
   styleUrl: './auth-page.scss',
 })
-export class ResetPasswordPage {
+export class ResetPasswordPage implements OnInit {
+  private readonly logger = inject(Logger);
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
@@ -47,6 +56,10 @@ export class ResetPasswordPage {
   protected readonly linkInvalid = computed(
     () => !this.token() || !!this.error() || this.failure() === 'invalidToken',
   );
+
+  ngOnInit(): void {
+    this.logger.debug('ResetPasswordPage.ngOnInit');
+  }
 
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();

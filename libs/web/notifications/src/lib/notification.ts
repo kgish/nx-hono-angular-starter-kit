@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import {
   MAT_SNACK_BAR_DATA,
@@ -7,6 +7,7 @@ import {
   MatSnackBarLabel,
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
+import { Logger } from '@fullstack/web/logging';
 import { TranslatePipe } from '@ngx-translate/core';
 
 export type NotificationType = 'success' | 'failure' | 'info';
@@ -32,9 +33,14 @@ export interface NotificationData {
   templateUrl: './notification.html',
   styleUrl: './notification.scss',
 })
-export class Notification {
+export class Notification implements OnInit {
+  private readonly logger = inject(Logger);
   private readonly ref = inject<MatSnackBarRef<Notification>>(MatSnackBarRef);
   protected readonly data = inject<NotificationData>(MAT_SNACK_BAR_DATA);
+
+  ngOnInit(): void {
+    this.logger.debug('Notification.ngOnInit');
+  }
 
   protected close(): void {
     this.ref.dismiss();

@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { isActive, Router, RouterLink } from '@angular/router';
 import { AuthStore, LOGIN_PATH } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { Notifier } from '@fullstack/web/notifications';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -15,13 +16,18 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './user-menu.html',
   styleUrl: './user-menu.scss',
 })
-export class UserMenu {
+export class UserMenu implements OnInit {
+  private readonly logger = inject(Logger);
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly notifier = inject(Notifier);
 
   protected readonly loginPath = LOGIN_PATH;
   protected readonly onLoginPage = isActive(LOGIN_PATH, this.router);
+
+  ngOnInit(): void {
+    this.logger.debug('UserMenu.ngOnInit');
+  }
 
   protected async signOut(): Promise<void> {
     await this.auth.signOut();

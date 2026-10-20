@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import {
   form,
   FormField,
@@ -12,6 +12,7 @@ import {
   SignUpSchema,
 } from '@fullstack/schemas';
 import { type AuthErrorCode, AuthStore } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { Notifier } from '@fullstack/web/notifications';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fieldMessage } from './field-message';
@@ -22,7 +23,8 @@ import { fieldMessage } from './field-message';
   templateUrl: './register-page.html',
   styleUrl: './auth-page.scss',
 })
-export class RegisterPage {
+export class RegisterPage implements OnInit {
+  private readonly logger = inject(Logger);
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly notifier = inject(Notifier);
@@ -46,6 +48,10 @@ export class RegisterPage {
     fieldMessage('password', this.registerForm.password()),
   );
   protected readonly error = signal<AuthErrorCode | null>(null);
+
+  ngOnInit(): void {
+    this.logger.debug('RegisterPage.ngOnInit');
+  }
 
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();

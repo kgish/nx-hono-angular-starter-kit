@@ -1,4 +1,11 @@
-import { Component, effect, inject, isDevMode, VERSION } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  isDevMode,
+  OnInit,
+  VERSION,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { LanguageStore } from '@fullstack/web/i18n';
@@ -17,8 +24,9 @@ import { Toolbar } from './toolbar';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   private readonly title = inject(Title);
+  private readonly logger = inject(Logger);
   private readonly appTitle = translate('app.title');
 
   constructor() {
@@ -26,7 +34,7 @@ export class App {
     effect(() => this.title.setTitle(String(this.appTitle())));
 
     // The app initializers have run by now, so the language is loaded.
-    inject(Logger).info(`${this.appTitle()} started`, {
+    this.logger.info(`${this.appTitle()} started`, {
       version,
       mode: isDevMode() ? 'development' : 'production',
       logLevel: inject(LOG_LEVEL),
@@ -34,5 +42,9 @@ export class App {
       angular: VERSION.full,
       api: API_PREFIX,
     });
+  }
+
+  ngOnInit(): void {
+    this.logger.debug('App.ngOnInit');
   }
 }

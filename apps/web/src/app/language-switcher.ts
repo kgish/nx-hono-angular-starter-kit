@@ -1,6 +1,7 @@
 import { UpperCasePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { LANGUAGES, LanguageStore } from '@fullstack/web/i18n';
+import { Logger } from '@fullstack/web/logging';
 import { Notifier } from '@fullstack/web/notifications';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -14,9 +15,14 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './language-switcher.html',
   styleUrl: './language-switcher.scss',
 })
-export class LanguageSwitcher {
+export class LanguageSwitcher implements OnInit {
+  private readonly logger = inject(Logger);
   protected readonly store = inject(LanguageStore);
   private readonly notifier = inject(Notifier);
+
+  ngOnInit(): void {
+    this.logger.debug('LanguageSwitcher.ngOnInit');
+  }
 
   protected async switchTo(
     language: (typeof LANGUAGES)[number],

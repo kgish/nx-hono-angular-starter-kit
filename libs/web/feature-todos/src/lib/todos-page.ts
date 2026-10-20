@@ -1,6 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CreateTodoSchema } from '@fullstack/schemas';
 import { TodoStore } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -11,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class TodosPage implements OnInit {
   protected readonly store = inject(TodoStore);
+  private readonly logger = inject(Logger);
 
   protected readonly title = signal('');
   protected readonly touched = signal(false);
@@ -38,6 +40,7 @@ export class TodosPage implements OnInit {
   });
 
   ngOnInit(): void {
+    this.logger.debug('TodosPage.ngOnInit');
     void this.store.load();
   }
 
