@@ -1,14 +1,15 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
   inject,
+  OnInit,
   signal,
   viewChild,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '@fullstack/web/data-access';
+import { Logger } from '@fullstack/web/logging';
 import { TranslatePipe } from '@ngx-translate/core';
 
 interface NavLink {
@@ -34,13 +35,13 @@ const GUEST_LINKS: readonly NavLink[] = [
   imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './nav-menu.html',
   styleUrl: './nav-menu.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:click)': 'closeOnOutsideClick($event)',
     '(document:keydown.escape)': 'closeAndRefocus()',
   },
 })
-export class NavMenu {
+export class NavMenu implements OnInit {
+  private readonly logger = inject(Logger);
   private readonly auth = inject(AuthStore);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly toggleButton =
@@ -50,6 +51,10 @@ export class NavMenu {
   protected readonly links = computed(() =>
     this.auth.isAuthenticated() ? USER_LINKS : GUEST_LINKS,
   );
+
+  ngOnInit(): void {
+    this.logger.debug('NavMenu.ngOnInit');
+  }
 
   protected toggle(): void {
     this.open.update((open) => !open);
